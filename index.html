@@ -1,0 +1,1865 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14958A">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>สมุดบัญชีฟันน้อย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@500;600;700&family=Anuphan:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: clinic chart board with three tabs (personal ledger, shared costs with Gym, tax summary).
+   Header holds mascot, profile switch (บิล / Gym) and sync status. Boards are two columns, stacking on phones. */
+:root{
+  --bg:#E9F4F3; --surface:#FFFFFF; --surface-2:#F3FAF9; --ink:#163735; --ink-2:#4D6C69; --line:#D2E5E2;
+  --mint:#14958A; --mint-soft:#D2F0EB; --gum:#D9506F; --gum-soft:#FBE0E6; --gold:#B9801B; --gold-soft:#FAEDD2;
+  --gym:#8455C9; --gym-soft:#ECE2F9;
+  --enamel:#FFFDF6; --enamel-line:#B9CFCB; --blush:#F7A9B8; --face:#1D3B39;
+  --shadow:0 1px 0 rgba(22,55,53,.06), 0 8px 24px -14px rgba(22,55,53,.35);
+  --f-display:"Mali", "Anuphan", "Noto Sans Thai", system-ui, sans-serif;
+  --f-body:"Anuphan", "Noto Sans Thai", "Leelawadee UI", system-ui, sans-serif;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D1B1C; --surface:#142729; --surface-2:#1A3033; --ink:#E2F2F0; --ink-2:#9DBAB6; --line:#27413F;
+  --mint:#4FD0BF; --mint-soft:#1B3F3B; --gum:#FF8FA6; --gum-soft:#43222B; --gold:#F0C064; --gold-soft:#3D3220;
+  --gym:#BC9BF2; --gym-soft:#2E2642;
+  --enamel:#F4F1E6; --enamel-line:#5C7470; --blush:#F7A9B8; --face:#1D3B39;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -16px rgba(0,0,0,.8); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0D1B1C; --surface:#142729; --surface-2:#1A3033; --ink:#E2F2F0; --ink-2:#9DBAB6; --line:#27413F;
+  --mint:#4FD0BF; --mint-soft:#1B3F3B; --gum:#FF8FA6; --gum-soft:#43222B; --gold:#F0C064; --gold-soft:#3D3220;
+  --gym:#BC9BF2; --gym-soft:#2E2642;
+  --enamel:#F4F1E6; --enamel-line:#5C7470; --blush:#F7A9B8; --face:#1D3B39;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -16px rgba(0,0,0,.8); color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;font-weight:700}
+h2{font-size:1.15rem}
+h3{font-size:1rem}
+.num{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--mint);outline-offset:2px;border-radius:8px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.muted{color:var(--ink-2)}
+.small{font-size:.85rem}
+
+/* header */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.top .mascot{width:76px;flex:none}
+.top-text{flex:1 1 260px;min-width:0}
+.top h1{font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.2}
+.speech{margin:4px 0 0;color:var(--ink-2)}
+.top-side{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.status{font-size:.8rem;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--ink-2);display:inline-block}
+.status.cloud i{background:var(--mint)} .status.local i{background:var(--gold)}
+.who{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.who span{font-size:.78rem;color:var(--ink-2);padding:0 6px}
+.who button{border:0;background:none;border-radius:999px;padding:5px 12px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.who button svg{width:16px;height:20px}
+.who button[aria-pressed="true"][data-p="bill"]{background:var(--mint-soft);color:var(--ink)}
+.who button[aria-pressed="true"][data-p="gym"]{background:var(--gym-soft);color:var(--ink)}
+
+/* tabs */
+.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);overflow-x:auto}
+.tabs a{padding:10px 16px;text-decoration:none;color:var(--ink-2);font-weight:600;border-radius:12px 12px 0 0;white-space:nowrap;margin-bottom:-2px;border-bottom:3px solid transparent}
+.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--mint);background:var(--surface)}
+.tabs a:hover{color:var(--ink)}
+
+/* board */
+.board{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:20px;align-items:start}
+.board,.col{min-width:0;max-width:100%}
+.col{display:flex;flex-direction:column;gap:20px}
+.arch,.tbl-wrap{max-width:100%}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.panel-head p{margin:0;color:var(--ink-2);font-size:.85rem}
+
+.monthbar{display:flex;align-items:center;gap:8px}
+.iconbtn{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;font-size:1.1rem;line-height:1}
+.iconbtn:hover{border-color:var(--mint)}
+.monthname{font-family:var(--f-display);font-weight:700;font-size:1.25rem;min-width:9.5em;text-align:center}
+.sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.stat{padding:12px 14px;border-radius:14px;background:var(--surface-2);display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-size:clamp(1.05rem,2.2vw,1.4rem);font-weight:700;overflow-wrap:anywhere}
+.stat span{font-size:.8rem;color:var(--ink-2)}
+.stat.in b{color:var(--mint)} .stat.out b{color:var(--gum)} .stat.save b{color:var(--gold)} .stat.gymc b{color:var(--gym)}
+.stat.net{background:var(--ink);color:var(--surface)} .stat.net span{color:inherit;opacity:.75}
+.note-line{margin:10px 0 0;font-size:.85rem;color:var(--ink-2)}
+
+.arch{overflow-x:auto;padding-bottom:4px}
+.arch svg{display:block;width:100%;min-width:520px;height:auto}
+.tooth-day{cursor:pointer}
+.tooth-day:focus{outline:none}
+.tooth-day:focus-visible .t-body,.tooth-day:hover .t-body{stroke:var(--ink);stroke-width:2.4}
+.tooth-day.sel .t-body{stroke:var(--ink);stroke-width:3}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:4px;display:inline-block;border:1px solid var(--enamel-line)}
+
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:4px 12px;font-size:.85rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.dayflag{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--ink-2);margin-bottom:8px}
+.dayflag button{border:0;background:none;color:var(--mint);text-decoration:underline;padding:0}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 4px;border-top:1px dashed var(--line)}
+.row:first-child{border-top:0}
+.row .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.row.income .ic{background:var(--mint-soft)} .row.expense .ic{background:var(--gum-soft)} .row.saving .ic{background:var(--gold-soft)}
+.row.p-bill .ic{background:var(--mint-soft)} .row.p-gym .ic{background:var(--gym-soft)} .row.settle .ic{background:var(--gold-soft)}
+.row .what{min-width:0}
+.row .what strong{display:block;font-weight:600;overflow-wrap:anywhere}
+.row .what small{color:var(--ink-2);font-size:.8rem;display:block;overflow-wrap:anywhere}
+.tag{font-size:.68rem;padding:1px 7px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);margin-left:6px;vertical-align:middle;font-weight:500;white-space:nowrap}
+.row .amt{text-align:right;font-weight:700;white-space:nowrap;display:block}
+.row.income .amt{color:var(--mint)} .row.expense .amt{color:var(--gum)} .row.saving .amt{color:var(--gold)}
+.row.p-bill .amt{color:var(--mint)} .row.p-gym .amt{color:var(--gym)} .row.settle .amt{color:var(--gold)}
+.row .acts{display:flex;gap:4px;justify-content:flex-end;margin-top:2px}
+.row .acts button{border:0;background:none;font-size:.75rem;color:var(--ink-2);padding:2px 4px;border-radius:6px}
+.row .acts button:hover{color:var(--ink);background:var(--surface-2)}
+.row .acts button.danger{color:var(--gum)}
+.empty{display:flex;gap:14px;align-items:center;padding:18px 6px;color:var(--ink-2)}
+.empty svg{width:56px;flex:none}
+
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.seg.two-seg{grid-template-columns:repeat(2,1fr)}
+.seg button{border:0;background:none;border-radius:10px;padding:8px 4px;font-weight:600;color:var(--ink-2);display:flex;justify-content:center;align-items:center;gap:6px}
+.seg button svg{width:16px;height:20px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.seg button[data-t="income"][aria-pressed="true"]{color:var(--mint)}
+.seg button[data-t="expense"][aria-pressed="true"]{color:var(--gum)}
+.seg button[data-t="saving"][aria-pressed="true"]{color:var(--gold)}
+.seg button[data-p="bill"][aria-pressed="true"]{color:var(--mint)}
+.seg button[data-p="gym"][aria-pressed="true"]{color:var(--gym)}
+form{display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:.8rem;color:var(--ink-2);font-weight:600}
+.field input,.field select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);min-width:0}
+.field input:focus,.field select:focus{border-color:var(--mint);outline:none;box-shadow:0 0 0 3px var(--mint-soft)}
+.field .hint{font-size:.75rem;color:var(--ink-2)}
+.amount-in{font-size:1.4rem;font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.taxbox{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;padding:10px;border-radius:14px;background:var(--mint-soft)}
+.cta{display:flex;gap:8px}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:700;background:var(--mint);color:var(--surface);flex:1}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);flex:none}
+.btn.gold{background:var(--gold)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.msg{font-size:.85rem;min-height:1.3em;color:var(--ink-2);margin:0}
+.msg.err{color:var(--gum)}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.quick button{font-size:.78rem;border:1px dashed var(--enamel-line);background:none;border-radius:10px;padding:3px 9px;color:var(--ink-2)}
+.quick button:hover{border-style:solid;color:var(--ink)}
+
+.shade{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:3px;margin:14px 0 6px}
+.tab{aspect-ratio:1/2.3;max-width:100%;border-radius:6px 6px 40% 40%;border:1px solid var(--enamel-line);position:relative;background:var(--surface-2)}
+.tab.on{border-color:transparent}
+.tab small{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.55rem;color:var(--ink-2);white-space:nowrap}
+.fund-nums{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:24px}
+.fund-nums b{font-size:1.3rem;color:var(--gold)}
+.fund-edit{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.fund-edit input{flex:1 1 140px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);min-width:0}
+.linkbtn{border:0;background:none;color:var(--mint);font-weight:600;padding:0;font-size:.85rem}
+
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:.85rem}
+.bar .lbl{overflow-wrap:anywhere;line-height:1.3}
+.bar .track{height:12px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex}
+.bar .fill{height:100%;background:var(--gum);display:block}
+.bar .fill.b{background:var(--mint)} .bar .fill.g{background:var(--gym)}
+.bar .v{font-weight:600;min-width:5.5em;text-align:right}
+.trend svg{width:100%;height:auto;display:block}
+.trend text{fill:var(--ink-2);font-family:var(--f-body);font-size:11px}
+.foot{font-size:.8rem;color:var(--ink-2);text-align:center}
+.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:var(--gold-soft);color:var(--ink);font-size:.85rem}
+.banner button{border:1px solid var(--gold);background:none;border-radius:10px;padding:4px 10px;color:var(--ink);font-size:.8rem}
+
+/* shared */
+.duo{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.duo .p{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:10px;border-radius:16px;min-width:0}
+.duo .p.bill{background:var(--mint-soft)} .duo .p.gym{background:var(--gym-soft)}
+.duo .p svg{width:58px}
+.duo .p b{font-size:1.2rem}
+.duo .p.turn{outline:3px dashed var(--gold);outline-offset:-3px}
+.duo .vs{font-family:var(--f-display);color:var(--ink-2);font-size:.9rem;text-align:center}
+.turnmsg{margin:12px 0 0;text-align:center;font-family:var(--f-display);font-weight:600}
+.settle{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--gold-soft)}
+.settle b{font-size:1.1rem}
+.settle .btn{flex:none;padding:8px 14px}
+.bills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.billchip{padding:10px;border-radius:14px;border:1px dashed var(--enamel-line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.billchip.done{border-style:solid;border-color:var(--line);background:var(--surface-2)}
+.billchip strong{font-size:.9rem}
+.billchip small{font-size:.75rem;color:var(--ink-2);overflow-wrap:anywhere}
+.billchip .num{font-weight:700}
+.meals{display:flex;gap:6px;flex-wrap:wrap}
+.meal{display:flex;flex-direction:column;align-items:center;gap:2px;width:58px;padding:6px 2px;border-radius:12px;font-size:.68rem;text-align:center;line-height:1.25}
+.meal.bill{background:var(--mint-soft)} .meal.gym{background:var(--gym-soft)}
+.meal svg{width:20px;height:25px}
+.mealstats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.mealstats div{padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:.85rem}
+
+/* reminders + todo */
+.remind{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);min-width:0}
+.remind-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.remind-head h2{font-size:1rem;display:flex;align-items:center;gap:8px}
+.remind-head h2 svg{width:22px;height:28px}
+.remind-list{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.remind-empty{margin:0;color:var(--ink-2);font-size:.85rem}
+.rem{flex:0 0 auto;width:236px;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);border-left-width:5px}
+.rem.over{border-left-color:var(--gum);background:var(--gum-soft)}
+.rem.urgent{border-left-color:var(--gold)}
+.rem.soon{border-left-color:var(--mint)}
+.rem strong{overflow-wrap:anywhere;font-size:.9rem;line-height:1.35}
+.rem small{color:var(--ink-2);font-size:.78rem}
+.rem-act{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:2px}
+.rem-act button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px 10px;font-size:.78rem}
+.rem-act button:hover{border-color:var(--mint)}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.pill.over{background:var(--gum);color:var(--surface)} .pill.urgent{background:var(--gold);color:var(--surface)}
+.pill.soon{background:var(--mint-soft);color:var(--ink)} .pill.later{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.pill.done{background:var(--mint);color:var(--surface)}
+.tabs a .badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--gum);color:var(--surface);font-size:.7rem;margin-left:6px}
+.todo{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 4px;border-top:1px dashed var(--line)}
+.group-label+.todo,.todo:first-child{border-top:0}
+.check{width:28px;height:28px;border-radius:9px;border:2px solid var(--enamel-line);background:var(--surface);display:grid;place-items:center;padding:0}
+.check svg{width:16px;height:16px;opacity:0}
+.check:hover{border-color:var(--mint)} .check:hover svg{opacity:.35}
+.todo.done .check{background:var(--mint);border-color:var(--mint)} .todo.done .check svg{opacity:1}
+.todo.done .what strong{text-decoration:line-through;color:var(--ink-2)}
+.todo .what{min-width:0} .todo .what strong{display:block;font-weight:600;overflow-wrap:anywhere}
+.todo .what small{color:var(--ink-2);font-size:.8rem;display:block;overflow-wrap:anywhere}
+.todo .amt{text-align:right;font-weight:700;white-space:nowrap;display:block}
+.group-label{font-size:.75rem;letter-spacing:.06em;color:var(--ink-2);font-weight:700;margin:16px 0 2px}
+.group-label:first-child{margin-top:0}
+.group-label.over{color:var(--gum)}
+.cardrow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 4px;border-top:1px dashed var(--line)}
+.cardrow:first-child{border-top:0}
+.cardrow .what{min-width:0} .cardrow .what strong{display:block;overflow-wrap:anywhere}
+.cardrow .what small{display:block;color:var(--ink-2);font-size:.8rem}
+.cardrow .right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.cc{width:46px;height:30px;border-radius:6px;background:linear-gradient(135deg,var(--mint),var(--gym));position:relative}
+.cc::after{content:"";position:absolute;left:6px;top:9px;width:10px;height:8px;border-radius:2px;background:var(--gold-soft)}
+.acts-line{display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap}
+.acts-line button{border:0;background:none;font-size:.75rem;color:var(--ink-2);padding:2px 4px;border-radius:6px}
+.acts-line button:hover{color:var(--ink);background:var(--surface-2)}
+.acts-line button.danger{color:var(--gum)} .acts-line button.go{color:var(--mint);font-weight:700}
+.check-line{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--ink-2)}
+.check-line input{width:18px;height:18px;accent-color:var(--mint);flex:none}
+
+
+.gate{display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;align-items:center;max-width:620px;margin:0 auto;width:100%}
+.gate-art svg{width:110px}
+.gate h2{font-size:1.4rem;margin-bottom:6px}
+.gate p{margin:0 0 12px}
+body.gated .tabs, body.gated .remind, body.gated #exampleBanner, body.gated .board{display:none!important}
+@media (max-width:560px){ .gate{grid-template-columns:1fr} .gate-art svg{width:80px} }
+/* tax */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:700;border-bottom:0;border-top:2px solid var(--ink)}
+.calc{display:flex;flex-direction:column;gap:6px}
+.calc div{display:flex;justify-content:space-between;gap:10px;font-size:.9rem}
+.calc div.big{font-size:1.15rem;font-weight:700;padding-top:8px;border-top:2px solid var(--ink);margin-top:4px}
+.calc div span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.allow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.callout{padding:12px 14px;border-radius:14px;background:var(--surface-2);font-size:.85rem;color:var(--ink-2);border-left:0}
+.callout strong{color:var(--ink)}
+.formbadge{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--ink);color:var(--surface);font-weight:700;font-size:.9rem}
+.refs{font-size:.8rem;color:var(--ink-2);margin:0;padding-left:18px}
+.refs a{color:var(--mint)}
+
+@media (max-width:900px){
+  .board{display:flex;flex-direction:column}
+  .col-right{order:-1}
+  .top-side{align-items:flex-start;width:100%;flex-direction:row;flex-wrap:wrap}
+}
+@media (max-width:560px){
+  .sum{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .monthname{min-width:0;flex:1}
+  .two,.taxbox,.allow{grid-template-columns:1fr}
+  .bar{grid-template-columns:minmax(0,7em) minmax(0,1fr) auto}
+  .bills{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.top .mascot svg{animation:bob 3.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.top .mascot svg{animation:none}}
+</style>
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font-size:14px;font-family:system-ui,sans-serif}
+img{max-width:100%}
+</style>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="mascot" id="mascot" aria-hidden="true"></div>
+    <div class="top-text">
+      <span class="eyebrow" id="eyebrow">บัญชีรายรับ–รายจ่าย</span>
+      <h1>สมุดบัญชีฟันน้อย</h1>
+      <p class="speech" id="speech">กำลังเปิดสมุดบัญชี…</p>
+    </div>
+    <div class="top-side">
+      <div class="who" role="group" aria-label="กำลังใช้งานในชื่อ">
+        <span>ใช้งานในชื่อ</span>
+        <button type="button" data-p="bill" aria-pressed="true"></button>
+        <button type="button" data-p="gym" aria-pressed="false"></button>
+      </div>
+      <div class="status" id="status"><i></i><span>กำลังเชื่อมต่อ</span></div>
+      <button type="button" class="linkbtn" id="logoutBtn" hidden>ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <section class="panel gate" id="gate" hidden aria-labelledby="gateTitle">
+    <div class="gate-art" id="gateArt" aria-hidden="true"></div>
+    <div class="gate-body">
+      <h2 id="gateTitle">เข้าสู่ระบบสมุดบัญชี</h2>
+      <p class="muted" id="gateText">ใส่อีเมลที่ได้รับสิทธิ์ ระบบจะส่งลิงก์เข้าสู่ระบบไปที่อีเมลนั้น ไม่ต้องตั้งรหัสผ่าน</p>
+      <form id="gateForm" novalidate>
+        <div class="field">
+          <label for="gEmail">อีเมล</label>
+          <input id="gEmail" type="email" autocomplete="email" placeholder="name@example.com">
+        </div>
+        <div class="cta"><button class="btn" type="submit" id="gateBtn">ส่งลิงก์เข้าสู่ระบบ</button></div>
+        <p class="msg" id="gateMsg" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <nav class="tabs" aria-label="หน้าในสมุดบัญชี">
+    <a href="#me" data-v="me">บัญชีส่วนตัว</a>
+    <a href="#shared" data-v="shared">ใช้จ่ายร่วม บิล × Gym</a>
+    <a href="#todo" data-v="todo">เช็กลิสต์ &amp; บัตร<span class="badge" id="todoBadge" hidden></span></a>
+    <a href="#tax" data-v="tax">สรุปยื่นภาษี</a>
+  </nav>
+
+  <section class="remind" aria-labelledby="remindTitle">
+    <div class="remind-head"><h2 id="remindTitle"><span id="remindIcon" aria-hidden="true"></span>ใกล้ครบกำหนดชำระ</h2><span class="small muted" id="remindSub"></span></div>
+    <div class="remind-list" id="remindList"></div>
+  </section>
+
+  <div id="exampleBanner" class="banner" hidden>
+    <span>รายการที่มีป้าย “ตัวอย่าง” ใส่ไว้ให้ดูวิธีใช้งาน ไม่ใช่ตัวเลขจริง</span>
+    <button type="button" id="clearExamples">ลบรายการตัวอย่างทั้งหมด</button>
+  </div>
+
+  <!-- ============ PERSONAL ============ -->
+  <section id="view-me" class="board">
+    <div class="col col-left">
+      <section class="panel" aria-labelledby="sumTitle">
+        <div class="panel-head">
+          <h2 id="sumTitle">สรุปประจำเดือน</h2>
+          <div class="monthbar">
+            <button class="iconbtn" type="button" data-mshift="-1" aria-label="เดือนก่อนหน้า">‹</button>
+            <span class="monthname" data-monthname>—</span>
+            <button class="iconbtn" type="button" data-mshift="1" aria-label="เดือนถัดไป">›</button>
+          </div>
+        </div>
+        <div class="sum">
+          <div class="stat in"><span>รายรับ</span><b class="num" id="sIn">฿0</b></div>
+          <div class="stat out"><span>รายจ่าย</span><b class="num" id="sOut">฿0</b></div>
+          <div class="stat save"><span>ออมเพื่อเป้าหมาย</span><b class="num" id="sSave">฿0</b></div>
+          <div class="stat net"><span>คงเหลือ</span><b class="num" id="sNet">฿0</b></div>
+        </div>
+        <p class="note-line" id="shareNote"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="archTitle">
+        <div class="panel-head">
+          <h2 id="archTitle">ชาร์ตฟันรายวัน</h2>
+          <p>ฟัน 1 ซี่ = 1 วัน · แตะซี่ฟันเพื่อดูรายการของวันนั้น</p>
+        </div>
+        <div class="arch" id="arch"></div>
+        <div class="legend">
+          <span><i style="background:var(--enamel)"></i>ไม่มีรายการ</span>
+          <span><i style="background:var(--mint)"></i>รับมากกว่าจ่าย</span>
+          <span><i style="background:var(--gum)"></i>จ่ายมากกว่ารับ (ฟันผุ)</span>
+          <span><i style="background:var(--surface-2);border-style:dashed"></i>ฟันคุด (ไม่มีวันนี้ในเดือน)</span>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="listTitle">
+        <div class="panel-head">
+          <h2 id="listTitle">รายการ</h2>
+          <div class="filters" role="group" aria-label="กรองประเภท">
+            <button class="chip" type="button" data-f="all" aria-pressed="true">ทั้งหมด</button>
+            <button class="chip" type="button" data-f="income" aria-pressed="false">รายรับ</button>
+            <button class="chip" type="button" data-f="expense" aria-pressed="false">รายจ่าย</button>
+            <button class="chip" type="button" data-f="saving" aria-pressed="false">ออม</button>
+          </div>
+        </div>
+        <div class="dayflag" id="dayFlag" hidden></div>
+        <ul class="list" id="list"></ul>
+      </section>
+    </div>
+
+    <div class="col col-right">
+      <section class="panel" aria-labelledby="formTitle">
+        <div class="panel-head"><h2 id="formTitle">จดรายการใหม่</h2></div>
+        <form id="txForm" novalidate>
+          <div class="seg" role="group" aria-label="ประเภทรายการ" id="typeSeg">
+            <button type="button" data-t="income" aria-pressed="false">รายรับ</button>
+            <button type="button" data-t="expense" aria-pressed="true">รายจ่าย</button>
+            <button type="button" data-t="saving" aria-pressed="false">ออม</button>
+          </div>
+          <div class="field">
+            <label for="fAmount">จำนวนเงิน (บาท)</label>
+            <input id="fAmount" class="amount-in num" inputmode="decimal" placeholder="0" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="fCat">หมวดหมู่</label>
+            <select id="fCat"></select>
+          </div>
+          <div class="taxbox" id="taxFields" hidden>
+            <div class="field">
+              <label for="fTax">ประเภทเงินได้ (มาตรา 40)</label>
+              <select id="fTax"></select>
+              <span class="hint">ดูจากหนังสือรับรอง 50 ทวิ ที่ผู้จ่ายออกให้</span>
+            </div>
+            <div class="field">
+              <label for="fWht">ภาษีหัก ณ ที่จ่าย (บาท)</label>
+              <input id="fWht" inputmode="decimal" placeholder="0" class="num" autocomplete="off">
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="fDate">วันที่</label>
+              <input id="fDate" type="date">
+            </div>
+            <div class="field">
+              <label for="fNote">บันทึกสั้นๆ</label>
+              <input id="fNote" placeholder="เช่น ค่าลงทะเบียนประชุม" maxlength="80" autocomplete="off">
+            </div>
+          </div>
+          <div class="quick" id="quick" aria-label="ตัวช่วยกรอกเร็ว"></div>
+          <div class="cta">
+            <button class="btn" type="submit" id="submitBtn">บันทึกรายการ</button>
+            <button class="btn ghost" type="button" id="cancelEdit" hidden>ยกเลิก</button>
+          </div>
+          <p class="msg" id="formMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="fundTitle">
+        <div class="panel-head">
+          <h2 id="fundTitle">กองทุนเป้าหมาย</h2>
+          <p id="fundName">—</p>
+        </div>
+        <p class="muted small" style="margin:0">ยิ่งออมมาก ฟันยิ่งขาวขึ้นตามไกด์เทียบสีฟัน VITA จาก C4 ไปจนถึง B1</p>
+        <div class="shade" id="shade"></div>
+        <div class="fund-nums">
+          <span><b class="num" id="fundSaved">฿0</b> <span class="muted num" id="fundGoal">/ ฿0</span></span>
+          <span class="num" id="fundPct" style="font-weight:700">0%</span>
+        </div>
+        <div style="margin-top:8px"><button class="linkbtn" type="button" id="editGoal">แก้ไขเป้าหมาย</button></div>
+        <div class="fund-edit" id="goalForm" hidden>
+          <input id="gName" placeholder="ชื่อเป้าหมาย" maxlength="60" aria-label="ชื่อเป้าหมาย">
+          <input id="gAmount" inputmode="decimal" placeholder="จำนวนเงินเป้าหมาย" class="num" aria-label="จำนวนเงินเป้าหมาย">
+          <button class="btn" type="button" id="saveGoal" style="flex:none">บันทึก</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="catTitle">
+        <div class="panel-head">
+          <h2 id="catTitle">เงินไปไหนบ้างเดือนนี้</h2>
+          <p>รายจ่ายแยกตามหมวด</p>
+        </div>
+        <div class="bars" id="bars"></div>
+      </section>
+
+      <section class="panel trend" aria-labelledby="trendTitle">
+        <div class="panel-head">
+          <h2 id="trendTitle">ย้อนหลัง 6 เดือน</h2>
+          <p><span style="color:var(--mint)">■</span> รับ &nbsp;<span style="color:var(--gum)">■</span> จ่าย &nbsp;<span style="color:var(--gold)">■</span> ออม</p>
+        </div>
+        <div id="trend"></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ SHARED ============ -->
+  <section id="view-shared" class="board" hidden>
+    <div class="col col-left">
+      <section class="panel" aria-labelledby="duoTitle">
+        <div class="panel-head">
+          <h2 id="duoTitle">ใครจ่ายไปเท่าไหร่</h2>
+          <div class="monthbar">
+            <button class="iconbtn" type="button" data-mshift="-1" aria-label="เดือนก่อนหน้า">‹</button>
+            <span class="monthname" data-monthname>—</span>
+            <button class="iconbtn" type="button" data-mshift="1" aria-label="เดือนถัดไป">›</button>
+          </div>
+        </div>
+        <div class="duo" id="duo"></div>
+        <p class="turnmsg" id="turnMsg"></p>
+        <div class="settle" id="settleBox"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="billsTitle">
+        <div class="panel-head">
+          <h2 id="billsTitle">บิลประจำเดือน</h2>
+          <p>ค่าเช่า ค่าน้ำ ค่าไฟ เน็ต จ่ายแล้วหรือยัง</p>
+        </div>
+        <div class="bills" id="bills"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="mealTitle">
+        <div class="panel-head">
+          <h2 id="mealTitle">ผลัดกันเลี้ยงข้าว</h2>
+          <p>12 มื้อล่าสุด เรียงจากเก่าไปใหม่</p>
+        </div>
+        <div class="meals" id="meals"></div>
+        <div class="mealstats" id="mealStats"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="shListTitle">
+        <div class="panel-head">
+          <h2 id="shListTitle">รายการใช้จ่ายร่วม</h2>
+          <p id="shTotal"></p>
+        </div>
+        <ul class="list" id="shList"></ul>
+      </section>
+    </div>
+
+    <div class="col col-right">
+      <section class="panel" aria-labelledby="shFormTitle">
+        <div class="panel-head"><h2 id="shFormTitle">จดค่าใช้จ่ายร่วม</h2></div>
+        <form id="shForm" novalidate>
+          <div class="field">
+            <label>ใครเป็นคนจ่าย</label>
+            <div class="seg two-seg" role="group" aria-label="ผู้จ่าย" id="payerSeg">
+              <button type="button" data-p="bill" aria-pressed="true"></button>
+              <button type="button" data-p="gym" aria-pressed="false"></button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="sAmount">จำนวนเงิน (บาท)</label>
+            <input id="sAmount" class="amount-in num" inputmode="decimal" placeholder="0" autocomplete="off">
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="sCat">หมวด</label>
+              <select id="sCat"></select>
+            </div>
+            <div class="field" id="mealField">
+              <label for="sMeal">มื้อ</label>
+              <select id="sMeal"></select>
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="sSplit">แบ่งกันอย่างไร</label>
+              <select id="sSplit">
+                <option value="half">หารครึ่ง 50 : 50</option>
+                <option value="payer">ผู้จ่ายเลี้ยง (ไม่ต้องคืน)</option>
+                <option value="other">จ่ายแทนอีกฝ่ายทั้งหมด</option>
+                <option value="custom">กำหนดสัดส่วนเอง</option>
+              </select>
+            </div>
+            <div class="field" id="pctField" hidden>
+              <label for="sPct">ส่วนของบิล (%)</label>
+              <input id="sPct" inputmode="numeric" placeholder="60" class="num" autocomplete="off">
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="sDate">วันที่</label>
+              <input id="sDate" type="date">
+            </div>
+            <div class="field">
+              <label for="sNote">บันทึกสั้นๆ</label>
+              <input id="sNote" placeholder="เช่น ข้าวมันไก่หน้าคอนโด" maxlength="80" autocomplete="off">
+            </div>
+          </div>
+          <div class="cta">
+            <button class="btn" type="submit" id="shSubmit">บันทึกค่าใช้จ่ายร่วม</button>
+            <button class="btn ghost" type="button" id="shCancel" hidden>ยกเลิก</button>
+          </div>
+          <p class="msg" id="shMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="shCatTitle">
+        <div class="panel-head">
+          <h2 id="shCatTitle">แยกตามหมวด</h2>
+          <p><span style="color:var(--mint)">■</span> <span data-name="bill"></span>จ่าย &nbsp;<span style="color:var(--gym)">■</span> <span data-name="gym"></span>จ่าย</p>
+        </div>
+        <div class="bars" id="shBars"></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ TODO + CARDS ============ -->
+  <section id="view-todo" class="board" hidden>
+    <div class="col col-left">
+      <section class="panel" aria-labelledby="todoTitle">
+        <div class="panel-head">
+          <h2 id="todoTitle">เช็กลิสต์ค่าใช้จ่าย</h2>
+          <div class="filters" role="group" aria-label="แสดงรายการของใคร" id="todoFilter">
+            <button class="chip" type="button" data-tf="mine" aria-pressed="true">ของฉัน + ร่วมกัน</button>
+            <button class="chip" type="button" data-tf="all" aria-pressed="false">ทั้งหมด</button>
+          </div>
+        </div>
+        <div id="todoList"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="cardTitle">
+        <div class="panel-head">
+          <h2 id="cardTitle">บัตรเครดิต</h2>
+          <p>เตือนบนแถบด้านบนตั้งแต่ 7 วันก่อนครบกำหนด</p>
+        </div>
+        <div id="cardList"></div>
+      </section>
+    </div>
+
+    <div class="col col-right">
+      <section class="panel" aria-labelledby="tdFormTitle">
+        <div class="panel-head"><h2 id="tdFormTitle">เพิ่มรายการที่ต้องจ่าย</h2></div>
+        <form id="tdForm" novalidate>
+          <div class="field">
+            <label for="tTitle">ต้องจ่ายอะไร</label>
+            <input id="tTitle" placeholder="เช่น ค่าสมัครประชุมรากเทียม (Early bird)" maxlength="80" autocomplete="off">
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="tAmount">จำนวนเงิน (ถ้ามี)</label>
+              <input id="tAmount" inputmode="decimal" placeholder="0" class="num" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="tDue">ครบกำหนด (ถ้ามี)</label>
+              <input id="tDue" type="date">
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="tOwner">ของใคร</label>
+              <select id="tOwner"></select>
+            </div>
+            <div class="field">
+              <label for="tRepeat">ทำซ้ำ</label>
+              <select id="tRepeat"><option value="none">ครั้งเดียว</option><option value="monthly">ทุกเดือน</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="tCat">หมวดรายจ่าย</label>
+            <select id="tCat"></select>
+          </div>
+          <label class="check-line"><input type="checkbox" id="tAuto" checked> ติ๊กว่าจ่ายแล้ว ให้จดเป็นรายจ่ายให้อัตโนมัติ</label>
+          <div class="quick" id="tdQuick" aria-label="ตัวช่วยกรอกเร็ว"></div>
+          <div class="cta">
+            <button class="btn" type="submit" id="tdSubmit">เพิ่มในเช็กลิสต์</button>
+            <button class="btn ghost" type="button" id="tdCancel" hidden>ยกเลิก</button>
+          </div>
+          <p class="msg" id="tdMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="cdFormTitle">
+        <div class="panel-head"><h2 id="cdFormTitle">เพิ่มบัตรเครดิต</h2></div>
+        <form id="cdForm" novalidate>
+          <div class="field">
+            <label for="cName">ชื่อบัตร</label>
+            <input id="cName" placeholder="เช่น บัตรเครดิตธนาคาร A" maxlength="50" autocomplete="off">
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="cDay">วันครบกำหนดชำระ (วันที่)</label>
+              <input id="cDay" inputmode="numeric" placeholder="1–31" class="num" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="cOwner">ผู้ถือบัตร</label>
+              <select id="cOwner"></select>
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="cAmount">ยอดที่ต้องชำระรอบนี้</label>
+              <input id="cAmount" inputmode="decimal" placeholder="0" class="num" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="cNote">หมายเหตุ</label>
+              <input id="cNote" placeholder="เช่น ตัดบัญชีอัตโนมัติ" maxlength="60" autocomplete="off">
+            </div>
+          </div>
+          <div class="cta">
+            <button class="btn" type="submit" id="cdSubmit">เพิ่มบัตร</button>
+            <button class="btn ghost" type="button" id="cdCancel" hidden>ยกเลิก</button>
+          </div>
+          <p class="msg" id="cdMsg" role="status"></p>
+        </form>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ TAX ============ -->
+  <section id="view-tax" class="board" hidden>
+    <div class="col col-left">
+      <section class="panel" aria-labelledby="taxTitle">
+        <div class="panel-head">
+          <h2 id="taxTitle">เงินได้พึงประเมินแยกตามประเภท</h2>
+          <div class="monthbar">
+            <button class="iconbtn" type="button" data-yshift="-1" aria-label="ปีภาษีก่อนหน้า">‹</button>
+            <span class="monthname" id="yearName">—</span>
+            <button class="iconbtn" type="button" data-yshift="1" aria-label="ปีภาษีถัดไป">›</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>ประเภทเงินได้</th><th class="r">เงินได้</th><th class="r">หักค่าใช้จ่าย</th><th class="r">ภาษีหัก ณ ที่จ่าย</th></tr></thead>
+            <tbody id="taxRows"></tbody>
+          </table>
+        </div>
+        <p class="note-line" id="formNote"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="incListTitle">
+        <div class="panel-head">
+          <h2 id="incListTitle">รายการเงินได้ทั้งปี</h2>
+          <p>แก้ประเภทเงินได้หรือภาษีหัก ณ ที่จ่ายได้ที่แท็บบัญชีส่วนตัว</p>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>วันที่</th><th>รายการ</th><th>ประเภท</th><th class="r">จำนวนเงิน</th><th class="r">หัก ณ ที่จ่าย</th></tr></thead>
+            <tbody id="incRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="col col-right">
+      <section class="panel" aria-labelledby="calcTitle">
+        <div class="panel-head">
+          <h2 id="calcTitle">ประมาณการภาษี</h2>
+          <span class="formbadge" id="formBadge">ภ.ง.ด.90</span>
+        </div>
+        <div class="calc" id="calc"></div>
+        <div class="cta" style="margin-top:14px">
+          <button class="btn gold" type="button" id="dlBtn">ดาวน์โหลดไฟล์สรุปภาษี (.xlsx)</button>
+        </div>
+        <p class="msg" id="dlMsg" role="status"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="allowTitle">
+        <div class="panel-head">
+          <h2 id="allowTitle">ค่าลดหย่อน</h2>
+          <p>ลดหย่อนส่วนตัว 60,000 บาท ใส่ให้แล้ว</p>
+        </div>
+        <form id="allowForm" novalidate>
+          <div class="allow" id="allowFields"></div>
+          <p class="hint muted small" style="margin:0">กรอกยอดที่ใช้สิทธิ์ได้จริงหลังเทียบเพดานของแต่ละรายการแล้ว ระบบไม่ได้ตรวจเพดานให้</p>
+          <div class="cta"><button class="btn" type="submit">บันทึกค่าลดหย่อน</button></div>
+          <p class="msg" id="allowMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="taxRefTitle">
+        <div class="panel-head"><h2 id="taxRefTitle">เกณฑ์ที่ใช้คำนวณ</h2></div>
+        <div class="callout">
+          <p style="margin:0 0 6px"><strong>40(1) + 40(2)</strong> หักค่าใช้จ่ายรวมกัน 50% ไม่เกิน 100,000 บาท · <strong>40(6) ประกอบโรคศิลปะ</strong> หักเหมา 60% · <strong>40(8)</strong> ใช้ 60% เป็นค่าตั้งต้น (อัตราจริงขึ้นกับชนิดเงินได้)</p>
+          <p style="margin:0 0 6px">อัตราภาษีขั้นบันได 0–35% โดยเงินได้สุทธิ 150,000 บาทแรกได้รับยกเว้น และเทียบกับวิธี 0.5% ของเงินได้ที่ไม่ใช่ 40(1) เมื่อเงินได้นั้นรวมตั้งแต่ 1 ล้านบาท</p>
+          <p style="margin:0">ตัวเลขนี้เป็นการประมาณเพื่อเตรียมเอกสาร ควรตรวจกับหนังสือรับรอง 50 ทวิ และระบบ e-Filing ของกรมสรรพากรก่อนยื่นจริง</p>
+        </div>
+        <ul class="refs" style="margin-top:10px">
+          <li><a href="https://www.rd.go.th/fileadmin/user_upload/SMEs/Info-PND94-060666.pdf" target="_blank" rel="noopener">กรมสรรพากร: ผู้มีหน้าที่ยื่น ภ.ง.ด.94</a></li>
+          <li><a href="https://so01.tci-thaijo.org/index.php/JDAR/article/download/266756/174795/1034375" target="_blank" rel="noopener">ภาษีเงินได้บุคคลธรรมดาของวิชาชีพแพทย์ (ThaiJO)</a></li>
+          <li><a href="https://www.bangkokbiznews.com/finance/investment/1108329" target="_blank" rel="noopener">วิชาชีพอิสระ: ยื่น 40(2) หรือ 40(6)</a></li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+  <p class="foot" id="foot">ข้อมูลเก็บใน Supabase ของคุณ เห็นได้เฉพาะอีเมลที่อยู่ในรายชื่อสมาชิก</p>
+</div>
+
+<script>
+(function(){
+/* ---------- constants ---------- */
+const PEOPLE = {bill:{name:"บิล"}, gym:{name:"Gym"}};
+const other = p => p === "bill" ? "gym" : "bill";
+const CATS = {
+  income: ["ค่าตอบแทนคลินิก (DF)","เงินเดือน","ทุน/รางวัลวิจัย","วิทยากร/สอนพิเศษ","รายรับอื่น"],
+  expense: ["ประชุมวิชาการ/รากเทียม","คอร์ส CE & AI","สอบ & สมัคร Residency","วิจัย & ตีพิมพ์","เครื่องมือ & ตำรา","ใบอนุญาต & สมาคม","เดินทาง","อาหาร & คาเฟ่","ที่พัก & บิล","ดูแลตัวเอง","รายจ่ายอื่น"],
+  saving: ["กองทุน Residency","ออมฉุกเฉิน/ลงทุน"]
+};
+const QUICK = {
+  income: [["ค่าตอบแทนคลินิก (DF)","DF คลินิก"],["ทุน/รางวัลวิจัย","ทุนวิจัย"],["วิทยากร/สอนพิเศษ","สอนพิเศษ"]],
+  expense: [["ประชุมวิชาการ/รากเทียม","ค่าลงทะเบียนประชุม"],["คอร์ส CE & AI","คอร์ส AI"],["สอบ & สมัคร Residency","ค่าสอบ TOEFL"],["วิจัย & ตีพิมพ์","ค่า APC วารสาร"],["อาหาร & คาเฟ่","กาแฟก่อนเข้าคลินิก"]],
+  saving: [["กองทุน Residency","โอนเข้ากองทุนเรียนต่อ"]]
+};
+const TYPE_LABEL = {income:"รายรับ",expense:"รายจ่าย",saving:"ออม"};
+const TAX_TYPES = [
+  ["40(1)","40(1) เงินเดือน ค่าจ้าง"],
+  ["40(2)","40(2) ค่าจ้างทำของ ค่าวิทยากร ค่าธรรมเนียม"],
+  ["40(6)","40(6) วิชาชีพอิสระ ประกอบโรคศิลปะ"],
+  ["40(8)","40(8) เงินได้อื่นๆ / ธุรกิจ"],
+  ["exempt","เงินได้ที่ได้รับยกเว้น / ไม่ต้องรวมคำนวณ"]
+];
+const TAX_SHORT = {"40(1)":"40(1)","40(2)":"40(2)","40(6)":"40(6)","40(8)":"40(8)","exempt":"ยกเว้น"};
+const TAX_DEFAULT = {"ค่าตอบแทนคลินิก (DF)":"40(6)","เงินเดือน":"40(1)","ทุน/รางวัลวิจัย":"40(2)","วิทยากร/สอนพิเศษ":"40(2)","รายรับอื่น":"40(8)"};
+const BRACKETS = [[150000,0],[300000,.05],[500000,.10],[750000,.15],[1000000,.20],[2000000,.25],[5000000,.30],[Infinity,.35]];
+const ALLOW = [["social","เงินสมทบประกันสังคม"],["life","เบี้ยประกันชีวิต"],["health","เบี้ยประกันสุขภาพตนเอง"],["parents","บิดามารดา / ประกันสุขภาพบิดามารดา"],["funds","PVD / RMF / SSF / ThaiESG"],["home","ดอกเบี้ยเงินกู้ที่อยู่อาศัย"],["donate","เงินบริจาค"],["other","ลดหย่อนอื่นๆ เช่น Easy e-Receipt"]];
+const SH_CATS = ["ค่าเช่า","ค่าน้ำ","ค่าไฟ","เน็ต & มือถือ","อาหาร","ของใช้ในบ้าน","เดินทาง","เที่ยว & เดท","อื่นๆ"];
+const BILLS = ["ค่าเช่า","ค่าน้ำ","ค่าไฟ","เน็ต & มือถือ"];
+const TODO_QUICK = [
+  ["ค่าสมัครประชุมรากเทียม (Early bird)","ประชุมวิชาการ/รากเทียม"],
+  ["ค่าสมาชิกทันตแพทยสมาคมประจำปี","ใบอนุญาต & สมาคม"],
+  ["ค่าสอบ TOEFL / ส่งคะแนน","สอบ & สมัคร Residency"],
+  ["ค่าสมัครโปรแกรม Residency","สอบ & สมัคร Residency"],
+  ["ค่า APC บทความวิจัย","วิจัย & ตีพิมพ์"],
+  ["ค่าเช่าคอนโด","ค่าเช่า","both","monthly"]
+];
+const OWNER_LABEL = p => p === "both" ? "ร่วมกัน" : PEOPLE[p].name;
+const MEALS = ["มื้อเช้า","มื้อกลางวัน","มื้อเย็น","ของว่าง/คาเฟ่","เดลิเวอรี่"];
+const DEFAULT_GOALS = {bill:{name:"เรียนต่อ Residency ที่สหรัฐฯ", amount:300000}, gym:{name:"เงินออมของ Gym", amount:100000}};
+// VITA classical shade guide ordered from darkest value to lightest
+const VITA = [["C4","#B9A47E"],["A4","#C2A77F"],["C3","#C9B38E"],["B4","#CCB486"],["A3.5","#D3B98E"],["B3","#D6BF92"],["D3","#D8C59F"],["A3","#DDC79F"],["D4","#E0CDA8"],["C2","#E3D3B1"],["C1","#E8DCBE"],["A2","#EBDFC2"],["D2","#EFE5CD"],["B2","#F1E8D1"],["A1","#F5EEDD"],["B1","#FBF7EC"]];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const pad = n => String(n).padStart(2,"0");
+const now = new Date();
+const todayISO = now.getFullYear()+"-"+pad(now.getMonth()+1)+"-"+pad(now.getDate());
+const fmt = n => "฿" + Math.round(n).toLocaleString("th-TH");
+const fmt2 = n => (Math.round(n*100)/100).toLocaleString("th-TH",{minimumFractionDigits:2,maximumFractionDigits:2});
+const signed = n => (n<0?"−":"") + fmt(Math.abs(n));
+const monthLabel = ym => { const [y,m]=ym.split("-").map(Number); return new Date(y,m-1,1).toLocaleDateString("th-TH",{month:"long",year:"numeric"}); };
+const monthShort = ym => { const [y,m]=ym.split("-").map(Number); return new Date(y,m-1,1).toLocaleDateString("th-TH",{month:"short"}); };
+const shortDate = iso => { const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("th-TH",{day:"numeric",month:"short"}); };
+const shiftMonth = (ym,d) => { const [y,m]=ym.split("-").map(Number); const t=new Date(y,m-1+d,1); return t.getFullYear()+"-"+pad(t.getMonth()+1); };
+const daysIn = ym => { const [y,m]=ym.split("-").map(Number); return new Date(y,m,0).getDate(); };
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num = v => Number(String(v ?? "").replace(/[,\s฿]/g,""));
+const pname = p => PEOPLE[p].name;
+const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+const lsSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
+
+const state = {
+  ledger: [], shared: [], todos: [], cards: [], settings: {}, taxDocs: {}, mode: "loading",
+  todoFilter: "mine", tdEditingId: null, cdEditingId: null,
+  me: lsGet("fannoi-me") === "gym" ? "gym" : "bill",
+  view: "me", month: todayISO.slice(0,7), year: now.getFullYear(), day: null, filter: "all",
+  type: "expense", editingId: null, pendingDelete: null,
+  payer: lsGet("fannoi-me") === "gym" ? "gym" : "bill", shEditingId: null
+};
+const ownerOf = t => t.owner || "bill";
+const taxTypeOf = t => t.taxType || TAX_DEFAULT[t.category] || "40(8)";
+const goalOf = p => {
+  const g = (state.settings.goals || {})[p];
+  if (g) return g;
+  if (p === "bill" && state.settings.goalName) return {name: state.settings.goalName, amount: state.settings.goalAmount};
+  return DEFAULT_GOALS[p];
+};
+
+/* ---------- tooth drawing ---------- */
+const TOOTH = "M20 8C8 8 3 20 6 34c3 12 7 26 11 38 2 7 9 7 10-1l3-17c1-4 5-4 6 0l3 17c1 8 8 8 10 1 4-12 8-26 11-38 3-14-2-26-14-26-6 0-9 4-13 4s-7-4-13-4z";
+function accessory(who){
+  if (who === "bill") return '<circle cx="33" cy="15" r="6" fill="var(--surface-2)" stroke="var(--mint)" stroke-width="2.5"/><circle cx="33" cy="15" r="2" fill="var(--mint)"/><path d="M14 14q19-9 38 0" fill="none" stroke="var(--mint)" stroke-width="2.5" stroke-linecap="round"/>';
+  if (who === "gym") return '<path d="M48 10l-8-6v12zM48 10l8-6v12z" fill="var(--gym)"/><circle cx="48" cy="10" r="2.6" fill="var(--gym)"/>';
+  return "";
+}
+function mascotSVG(mood, who){
+  const mouth = mood==="happy" ? '<path d="M26 44q7 7 14 0" fill="none" stroke="var(--face)" stroke-width="2.6" stroke-linecap="round"/>'
+    : mood==="worried" ? '<path d="M27 46q6-3 12 0" fill="none" stroke="var(--face)" stroke-width="2.6" stroke-linecap="round"/><path d="M57 24q3 5 0 8q-3-3 0-8z" fill="#8FD3F0"/>'
+    : mood==="sad" ? '<path d="M26 47q7-6 14 0" fill="none" stroke="var(--face)" stroke-width="2.6" stroke-linecap="round"/><circle cx="44" cy="24" r="4.5" fill="#6B5B45" opacity=".8"/>'
+    : '<ellipse cx="33" cy="45" rx="3.5" ry="3" fill="var(--face)"/>';
+  const eyes = mood==="happy"
+    ? '<path d="M20 33q4-5 8 0M38 33q4-5 8 0" fill="none" stroke="var(--face)" stroke-width="2.6" stroke-linecap="round"/>'
+    : '<circle cx="24" cy="33" r="3.2" fill="var(--face)"/><circle cx="42" cy="33" r="3.2" fill="var(--face)"/><circle cx="25" cy="32" r="1" fill="#fff"/><circle cx="43" cy="32" r="1" fill="#fff"/>';
+  const sparkle = mood==="happy" ? '<path d="M60 26l1.6 4 4 1.6-4 1.6L60 37l-1.6-3.8-4-1.6 4-1.6z" fill="var(--gold)"/>' : "";
+  return `<svg viewBox="0 0 68 86" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="33" cy="82" rx="20" ry="3" fill="var(--line)"/>
+    <path d="${TOOTH}" fill="var(--enamel)" stroke="var(--enamel-line)" stroke-width="2"/>
+    <path d="M12 24q1-6 6-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+    ${eyes}
+    <ellipse cx="17" cy="41" rx="4" ry="2.4" fill="var(--blush)" opacity=".8"/>
+    <ellipse cx="49" cy="41" rx="4" ry="2.4" fill="var(--blush)" opacity=".8"/>
+    ${mouth}${sparkle}${accessory(who)}
+  </svg>`;
+}
+function miniTooth(color, sad, who){
+  const face = sad
+    ? '<path d="M27 46q6-4 12 0" fill="none" stroke="var(--face)" stroke-width="3" stroke-linecap="round"/>'
+    : '<path d="M26 43q7 7 14 0" fill="none" stroke="var(--face)" stroke-width="3" stroke-linecap="round"/>';
+  return `<svg viewBox="0 0 68 86" width="24" height="30" aria-hidden="true"><path d="${TOOTH}" fill="var(--enamel)" stroke="${color}" stroke-width="5"/><circle cx="24" cy="33" r="3.6" fill="var(--face)"/><circle cx="42" cy="33" r="3.6" fill="var(--face)"/>${face}${who?accessory(who):""}</svg>`;
+}
+const personTooth = p => miniTooth(p==="bill"?"var(--mint)":"var(--gym)", false, p);
+
+/* ---------- storage ---------- */
+const LS_KEY = "fannoi-ledger-v2";
+let db = null, downloads = null;
+function loadLocal(){
+  try {
+    const r = JSON.parse(lsGet(LS_KEY) || lsGet("fannoi-ledger-v1") || "null");
+    if (r){ state.ledger = r.ledger || r.tx || []; state.shared = r.shared || []; state.todos = r.todos || []; state.cards = r.cards || []; state.settings = r.settings || {}; state.taxDocs = r.taxDocs || {}; }
+  } catch(e){}
+}
+function saveLocal(){ lsSet(LS_KEY, JSON.stringify({ledger:state.ledger, shared:state.shared, todos:state.todos, cards:state.cards, settings:state.settings, taxDocs:state.taxDocs})); }
+function goLocal(){ if (state.mode === "local") return; state.mode = "local"; db = null; loadLocal(); render(); }
+const store = {
+  async add(coll, t){
+    if (state.mode === "cloud") { await db.collection(coll).add(t); return; }
+    state[coll].push({...t, id: "l"+Date.now()+Math.random().toString(36).slice(2,6)}); saveLocal(); render();
+  },
+  async update(coll, id, t){
+    if (state.mode === "cloud") { await db.doc(coll+"/"+id).set(t); return; }
+    const i = state[coll].findIndex(x=>x.id===id); if (i>-1) state[coll][i] = {...t, id}; saveLocal(); render();
+  },
+  async remove(coll, id){
+    if (state.mode === "cloud") { await db.doc(coll+"/"+id).delete(); return; }
+    state[coll] = state[coll].filter(x=>x.id!==id); saveLocal(); render();
+  },
+  async settings(s){
+    if (state.mode === "cloud") { await db.doc("settings/main").set(s); return; }
+    state.settings = s; saveLocal(); render();
+  },
+  async tax(key, data){
+    if (state.mode === "cloud") { await db.doc("tax/"+key).set(data); return; }
+    state.taxDocs[key] = data; saveLocal(); render();
+  }
+};
+/* Supabase adapter: exposes the small collection/doc API the page uses */
+function supaDb(sb){
+  const rows = new Map(), subs = [], loaded = {};
+  const collOf = path => path.split("/")[0];
+  const idOf = path => path.split("/").slice(1).join("/");
+  const snapColl = coll => { const docs = [...rows.entries()].filter(([,r]) => r.coll === coll).map(([p,r]) => ({id: idOf(p), exists: true, data: () => r.data})); return {docs, size: docs.length, empty: !docs.length}; };
+  const snapDoc = path => { const r = rows.get(path); return {id: idOf(path), exists: !!r, data: () => r ? r.data : undefined}; };
+  const emit = coll => subs.slice().forEach(x => { if (x.type === "coll" && x.key === coll) x.cb(snapColl(coll)); if (x.type === "doc" && collOf(x.key) === coll) x.cb(snapDoc(x.key)); });
+  function ensure(coll){
+    if (!loaded[coll]) loaded[coll] = (async () => {
+      const { data, error } = await sb.from("docs").select("path,coll,data").eq("coll", coll);
+      if (error) throw error;
+      data.forEach(r => rows.set(r.path, {coll: r.coll, data: r.data}));
+    })();
+    return loaded[coll];
+  }
+  sb.channel("docs-sync").on("postgres_changes", {event: "*", schema: "public", table: "docs"}, p => {
+    if (p.eventType === "DELETE"){ const path = p.old && p.old.path; if (path && rows.has(path)){ const c = rows.get(path).coll; rows.delete(path); emit(c); } return; }
+    const r = p.new; if (!r || !r.path) return;
+    rows.set(r.path, {coll: r.coll, data: r.data}); emit(r.coll);
+  }).subscribe();
+  async function write(path, data){
+    const coll = collOf(path);
+    const { error } = await sb.from("docs").upsert({path, coll, data, updated_at: new Date().toISOString()});
+    if (error) throw error;
+    rows.set(path, {coll, data}); emit(coll);
+  }
+  async function remove(path){
+    const coll = collOf(path);
+    const { error } = await sb.from("docs").delete().eq("path", path);
+    if (error) throw error;
+    rows.delete(path); emit(coll);
+  }
+  const listen = (type, key, coll, cb, err) => {
+    const x = {type, key, cb}; subs.push(x);
+    ensure(coll).then(() => cb(type === "coll" ? snapColl(coll) : snapDoc(key))).catch(e => err && err(e));
+    return () => { const i = subs.indexOf(x); if (i > -1) subs.splice(i, 1); };
+  };
+  const newId = () => (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, "") : Date.now().toString(36) + Math.random().toString(36).slice(2)).slice(0, 20);
+  const docRef = path => ({ set: d => write(path, d), delete: () => remove(path), onSnapshot: (cb, err) => listen("doc", path, collOf(path), cb, err) });
+  return {
+    doc: docRef,
+    collection: coll => ({ add: d => write(coll + "/" + newId(), d), doc: id => docRef(coll + "/" + id), onSnapshot: (cb, err) => listen("coll", coll, coll, cb, err) })
+  };
+}
+const browserDownloads = {
+  async save({filename, data}){
+    const blob = data instanceof Blob ? data : new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return {status: "saved"};
+  }
+};
+let sb = null, started = false;
+function showGate(text, isErr){
+  $("#gate").hidden = false;
+  $("#gateArt").innerHTML = mascotSVG(isErr ? "worried" : "happy", "bill");
+  if (text) msg($("#gateMsg"), text, isErr);
+  $$(".tabs, .remind, #exampleBanner, .board").forEach(el => el.dataset.gated = "1");
+  document.body.classList.add("gated");
+}
+function hideGate(){ $("#gate").hidden = true; document.body.classList.remove("gated"); }
+async function init(){
+  downloads = browserDownloads;
+  render();
+  const cfg = window.FANNOI_CONFIG || {};
+  if (!window.supabase || !cfg.supabaseUrl || /YOUR-/.test(cfg.supabaseUrl)){ goLocal(); return; }
+  sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  sb.auth.onAuthStateChange((ev, session) => {
+    if (session && !started) start(session);
+    if (ev === "SIGNED_OUT") location.reload();
+  });
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) start(session);
+  else { state.mode = "signedout"; render(); showGate(); }
+}
+async function start(session){
+  if (started) return; started = true;
+  hideGate();
+  const email = session.user.email;
+  const { data: mem, error } = await sb.from("members").select("person").ilike("email", email).maybeSingle();
+  if (error || !mem){
+    started = false; state.mode = "signedout"; render();
+    showGate(`อีเมล ${email} ยังไม่ได้รับสิทธิ์ใช้สมุดบัญชีนี้ ให้เจ้าของเพิ่มอีเมลในตาราง members ก่อน แล้วโหลดหน้านี้ใหม่`, true);
+    $("#logoutBtn").hidden = false;
+    return;
+  }
+  if (!lsGet("fannoi-me")){ state.me = mem.person; state.payer = mem.person; lsSet("fannoi-me", mem.person); setPayer(mem.person); resetTdForm(); resetCdForm(); }
+  $("#logoutBtn").hidden = false;
+  db = supaDb(sb);
+  const timer = setTimeout(() => { if (state.mode !== "cloud"){ msg($("#formMsg"), "เชื่อมต่อฐานข้อมูลช้ากว่าปกติ ลองโหลดหน้าใหม่", true); } }, 12000);
+  const live = (coll, key) => db.collection(coll).onSnapshot(snap => {
+    clearTimeout(timer);
+    state.mode = "cloud";
+    state[key] = snap.docs.map(d => ({...d.data(), id: d.id}));
+    render();
+  }, () => { clearTimeout(timer); msg($("#formMsg"), "โหลดข้อมูลไม่สำเร็จ ตรวจสอบการตั้งค่า Supabase", true); });
+  live("ledger","ledger");
+  live("shared","shared");
+  live("todos","todos");
+  live("cards","cards");
+  db.doc("settings/main").onSnapshot(s => { if (s.exists){ state.settings = s.data() || {}; render(); } }, () => {});
+  db.collection("tax").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); state.taxDocs = m; render(); }, () => {});
+}
+$("#gateForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("#gEmail").value.trim(), m = $("#gateMsg");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg(m, "ใส่อีเมลให้ถูกรูปแบบ", true); $("#gEmail").focus(); return; }
+  $("#gateBtn").disabled = true;
+  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
+  $("#gateBtn").disabled = false;
+  if (error) msg(m, "ส่งลิงก์ไม่สำเร็จ: " + error.message, true);
+  else msg(m, `ส่งลิงก์ไปที่ ${email} แล้ว เปิดอีเมลแล้วกดลิงก์บนอุปกรณ์เครื่องนี้`);
+});
+$("#logoutBtn").addEventListener("click", async () => { try { await sb.auth.signOut(); } catch(e){} location.reload(); });
+
+/* ---------- derived ---------- */
+const myLedger = () => state.ledger.filter(t => ownerOf(t) === state.me);
+const inMonth = (list, ym) => list.filter(t => (t.date||"").startsWith(ym));
+function totals(list){
+  const r = {income:0, expense:0, saving:0};
+  list.forEach(t => { r[t.type] = (r[t.type]||0) + (Number(t.amount)||0); });
+  r.net = r.income - r.expense - r.saving; return r;
+}
+const billPct = e => e.billPct == null ? 50 : Number(e.billPct);
+const shareOf = (e, p) => { const b = Number(e.amount) * billPct(e) / 100; return p === "bill" ? b : Number(e.amount) - b; };
+// positive = Gym owes Bill
+function balance(){
+  let bal = 0;
+  state.shared.forEach(e => {
+    const a = Number(e.amount) || 0;
+    if (e.kind === "settle"){ bal += e.from === "gym" ? -a : a; return; }
+    bal += e.paidBy === "bill" ? (a - shareOf(e,"bill")) : -shareOf(e,"bill");
+  });
+  return Math.round(bal*100)/100;
+}
+
+/* ---------- render: shell ---------- */
+function render(){
+  $$(".who button, #payerSeg button").forEach(b => { if (!b.dataset.ready){ b.innerHTML = personTooth(b.dataset.p) + esc(pname(b.dataset.p)); b.dataset.ready = 1; } });
+  $$('[data-name]').forEach(s => s.textContent = pname(s.dataset.name));
+  $$(".who button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === state.me)));
+  $$(".tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.v === state.view ? "page" : "false"));
+  ["me","shared","todo","tax"].forEach(v => $("#view-"+v).hidden = v !== state.view);
+  $$("[data-monthname]").forEach(s => s.textContent = monthLabel(state.month));
+
+  const st = $("#status");
+  st.className = "status " + state.mode;
+  st.querySelector("span").textContent = state.mode==="cloud" ? "ซิงก์ออนไลน์" : state.mode==="local" ? "โหมดทดลอง (เก็บในเครื่องนี้)" : state.mode==="signedout" ? "ยังไม่ได้เข้าสู่ระบบ" : "กำลังเชื่อมต่อ";
+  $("#foot").textContent = state.mode==="local"
+    ? "โหมดทดลอง: ยังไม่ได้ตั้งค่า Supabase ใน config.js ข้อมูลจึงเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น"
+    : "ข้อมูลเก็บใน Supabase ของคุณ เห็นได้เฉพาะอีเมลที่อยู่ในรายชื่อสมาชิก (บิลและ Gym)";
+  $("#exampleBanner").hidden = ![state.ledger, state.shared, state.todos, state.cards].some(l => l.some(t => t.example));
+  $("#eyebrow").textContent = state.view === "shared" ? "ค่าใช้จ่ายร่วม บิล × Gym" : state.view === "todo" ? `เช็กลิสต์ของ${pname(state.me)}` : `บัญชีของ${pname(state.me)}`;
+
+  renderMe(); renderShared(); renderTodo(); renderTax(); renderReminders();
+}
+function setHeader(mood, speech, who){ $("#mascot").innerHTML = mascotSVG(mood, who); $("#speech").textContent = speech; }
+
+/* ---------- render: personal ---------- */
+function renderMe(){
+  const mt = inMonth(myLedger(), state.month);
+  const T = totals(mt);
+  if (state.view === "me"){
+    let mood = "neutral", speech;
+    if (state.mode === "loading") speech = "กำลังเปิดสมุดบัญชี…";
+    else if (state.mode === "signedout") speech = "เข้าสู่ระบบก่อน แล้วฟันน้อยจะเปิดสมุดบัญชีให้";
+    else if (!mt.length) speech = `${pname(state.me)}ยังไม่มีรายการใน${monthLabel(state.month)} ลองจดรายการแรกได้เลย`;
+    else if (T.income === 0 && T.expense > 0){ mood="worried"; speech = `เดือนนี้ยังไม่มีรายรับ แต่จ่ายไปแล้ว ${fmt(T.expense)}`; }
+    else if (T.net < 0){ mood="sad"; speech = `ฟันผุแล้ว! รายจ่ายและเงินออมเกินรายรับอยู่ ${fmt(-T.net)}`; }
+    else {
+      const keep = T.income ? (T.income - T.expense) / T.income : 0;
+      const top = topCategory(mt);
+      if (keep >= .3){ mood="happy"; speech = `ฟันขาวสะอาด! เดือนนี้เหลือเก็บ ${Math.round(keep*100)}% ของรายรับ`; }
+      else { mood="worried"; speech = `เริ่มมีคราบหินปูน เหลือเก็บ ${Math.round(keep*100)}%${top ? ` · หมวดที่ใช้มากสุดคือ ${top}` : ""}`; }
+    }
+    setHeader(mood, speech, state.me);
+  }
+  $("#sIn").textContent = fmt(T.income);
+  $("#sOut").textContent = fmt(T.expense);
+  $("#sSave").textContent = fmt(T.saving);
+  $("#sNet").textContent = signed(T.net);
+  const myShare = inMonth(state.shared.filter(e => e.kind !== "settle"), state.month).reduce((a,e) => a + shareOf(e, state.me), 0);
+  $("#shareNote").textContent = myShare ? `ส่วนแบ่งค่าใช้จ่ายร่วมกับ${pname(other(state.me))}เดือนนี้ ${fmt(myShare)} (ดูแท็บใช้จ่ายร่วม ไม่ได้รวมในตัวเลขด้านบน)` : "";
+  renderArch(mt); renderList(mt); renderFund(); renderBars(mt); renderTrend();
+}
+function topCategory(mt){
+  const m = {}; mt.filter(t=>t.type==="expense").forEach(t => m[t.category]=(m[t.category]||0)+Number(t.amount));
+  const e = Object.entries(m).sort((a,b)=>b[1]-a[1])[0]; return e ? e[0] : "";
+}
+function renderArch(mt){
+  const days = daysIn(state.month);
+  const byDay = {}, cnt = {};
+  mt.forEach(t => { const d = Number(t.date.slice(8,10)); const s = t.type==="income" ? 1 : -1; byDay[d] = (byDay[d]||0) + s*Number(t.amount); cnt[d]=(cnt[d]||0)+1; });
+  const W = 820, tw = 42, gap = 8, x0 = (W - (16*tw + 15*gap))/2;
+  let g = "";
+  for (let i=0;i<32;i++){
+    const upper = i < 16, k = upper ? i : i-16;
+    const x = x0 + k*(tw+gap);
+    const curve = Math.pow(k-7.5,2)*0.5;
+    const day = i+1, exists = day <= days;
+    const net = byDay[day], has = cnt[day];
+    let fill = "var(--enamel)", stroke = "var(--enamel-line)", dash = "";
+    if (!exists){ fill = "var(--surface-2)"; dash = 'stroke-dasharray="4 4"'; }
+    else if (has){ fill = net >= 0 ? "var(--mint)" : "var(--gum)"; stroke = fill; }
+    const sel = state.day === day ? " sel" : "";
+    const y = upper ? 96 - curve : 132 + curve;
+    const tf = upper ? `translate(${x},${y}) scale(${tw/66},-${tw/66*0.9})` : `translate(${x},${y}) scale(${tw/66},${tw/66*0.9})`;
+    const label = exists ? `วันที่ ${day}${has ? ` · ${has} รายการ · สุทธิ ${signed(net)}` : " · ไม่มีรายการ"}` : "ฟันคุด: ไม่มีวันนี้ในเดือนนี้";
+    const ly = upper ? y + 14 : y - 6;
+    g += `<g class="${exists?"tooth-day":""}${sel}" ${exists?`data-day="${day}" tabindex="0" role="button"`:""} aria-label="${esc(label)}">
+      <title>${esc(label)}</title>
+      <path class="t-body" d="${TOOTH}" transform="${tf}" fill="${fill}" stroke="${stroke}" stroke-width="2" ${dash}/>
+      <text x="${x+tw/2}" y="${ly}" text-anchor="middle" font-size="12" font-family="Anuphan, sans-serif" fill="${exists?"var(--ink-2)":"var(--enamel-line)"}" font-weight="${state.day===day?700:500}">${exists?day:"คุด"}</text>
+    </g>`;
+  }
+  $("#arch").innerHTML = `<svg viewBox="0 0 ${W} 228" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="ชาร์ตฟันรายวันของ${esc(monthLabel(state.month))}">
+    <path d="M${x0-10} 20 Q ${W/2} 76 ${W-x0+10} 20" fill="none" stroke="var(--gum-soft)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M${x0-10} 208 Q ${W/2} 152 ${W-x0+10} 208" fill="none" stroke="var(--gum-soft)" stroke-width="10" stroke-linecap="round"/>
+    ${g}</svg>`;
+}
+function renderList(mt){
+  let list = mt.slice();
+  if (state.filter !== "all") list = list.filter(t => t.type === state.filter);
+  if (state.day) list = list.filter(t => Number(t.date.slice(8,10)) === state.day);
+  list.sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
+  const flag = $("#dayFlag");
+  if (state.day){
+    flag.hidden = false;
+    const [y,m] = state.month.split("-").map(Number);
+    flag.innerHTML = `แสดงเฉพาะ ${esc(new Date(y,m-1,state.day).toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long"}))} <button type="button" id="clearDay">ดูทั้งเดือน</button>`;
+  } else flag.hidden = true;
+  const ul = $("#list");
+  if (!list.length){
+    ul.innerHTML = `<li class="empty">${mascotSVG("neutral", state.me)}<span>${state.mode==="loading" ? "กำลังโหลดรายการ…" : "ยังไม่มีรายการในช่วงนี้ กรอกจำนวนเงินในแบบฟอร์ม แล้วกด “บันทึกรายการ” เพื่อเริ่มจด"}</span></li>`;
+    return;
+  }
+  const colors = {income:"var(--mint)", expense:"var(--gum)", saving:"var(--gold)"};
+  ul.innerHTML = list.map(t => {
+    const sign = t.type==="income" ? "+" : "−";
+    const confirming = state.pendingDelete === t.id;
+    const taxTag = t.type==="income" ? `<span class="tag">${esc(TAX_SHORT[taxTypeOf(t)])}${Number(t.wht)?` · หัก ณ ที่จ่าย ${fmt(t.wht)}`:""}</span>` : "";
+    return `<li class="row ${t.type}">
+      <span class="ic">${miniTooth(colors[t.type], t.type==="expense")}</span>
+      <span class="what"><strong>${esc(t.note || t.category)}${t.example?'<span class="tag">ตัวอย่าง</span>':""}</strong>
+        <small>${esc(shortDate(t.date))} · ${esc(t.category)} ${taxTag}</small></span>
+      <span><span class="amt num">${sign}${fmt(t.amount)}</span>
+        <span class="acts"><button type="button" data-edit="${esc(t.id)}">แก้ไข</button>
+        <button type="button" class="${confirming?"danger":""}" data-del="${esc(t.id)}">${confirming?"ยืนยันลบ":"ลบ"}</button></span></span>
+    </li>`;
+  }).join("");
+}
+function renderFund(){
+  const g = goalOf(state.me);
+  const saved = myLedger().filter(t => t.type==="saving" && t.category==="กองทุน Residency").reduce((a,t)=>a+Number(t.amount),0);
+  const goal = Math.max(1, Number(g.amount)||1);
+  const pct = Math.min(1, saved/goal);
+  const on = Math.round(pct*16);
+  $("#fundName").textContent = g.name;
+  $("#fundSaved").textContent = fmt(saved);
+  $("#fundGoal").textContent = "/ " + fmt(goal);
+  $("#fundPct").textContent = (pct*100).toFixed(pct<.1?1:0) + "%";
+  $("#shade").innerHTML = VITA.map(([n,c],i) => `<div class="tab ${i<on?"on":""}" style="${i<on?`background:${c}`:""}" title="${n}"><small>${n}</small></div>`).join("");
+  $("#shade").setAttribute("aria-label", `ออมแล้ว ${Math.round(pct*100)}% ของเป้าหมาย`);
+}
+function renderBars(mt){
+  const m = {}; mt.filter(t=>t.type==="expense").forEach(t => m[t.category]=(m[t.category]||0)+Number(t.amount));
+  const rows = Object.entries(m).sort((a,b)=>b[1]-a[1]);
+  if (!rows.length){ $("#bars").innerHTML = `<p class="muted" style="margin:0">ยังไม่มีรายจ่ายใน${esc(monthLabel(state.month))}</p>`; return; }
+  const max = rows[0][1];
+  $("#bars").innerHTML = rows.map(([k,v]) => `<div class="bar"><span class="lbl">${esc(k)}</span><span class="track"><span class="fill" style="width:${(v/max*100).toFixed(1)}%"></span></span><span class="v num">${fmt(v)}</span></div>`).join("");
+}
+function renderTrend(){
+  const months = []; for (let i=5;i>=0;i--) months.push(shiftMonth(state.month,-i));
+  const data = months.map(m => totals(inMonth(myLedger(), m)));
+  const max = Math.max(1, ...data.map(d => Math.max(d.income, d.expense, d.saving)));
+  const nice = niceMax(max);
+  const W=360,H=190,L=44,R=8,Tp=10,B=26, ph=H-Tp-B, pw=W-L-R, gw=pw/6, bw=Math.min(12,(gw-10)/3);
+  let s = "";
+  for (let i=0;i<=3;i++){ const v = nice*i/3, y = Tp+ph-(v/nice)*ph;
+    s += `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y+4}" text-anchor="end">${v>=1000?(v/1000).toFixed(v%1000?1:0)+"k":Math.round(v)}</text>`; }
+  data.forEach((d,i) => {
+    const cx = L + gw*i + gw/2;
+    [["income","var(--mint)"],["expense","var(--gum)"],["saving","var(--gold)"]].forEach(([k,c],j) => {
+      const h = d[k]/nice*ph, x = cx + (j-1.5)*bw + (j-1)*2;
+      if (h>0) s += `<rect x="${x}" y="${Tp+ph-h}" width="${bw}" height="${h}" rx="3" fill="${c}"><title>${monthLabel(months[i])} ${TYPE_LABEL[k]} ${fmt(d[k])}</title></rect>`;
+    });
+    s += `<text x="${cx}" y="${H-8}" text-anchor="middle" ${months[i]===state.month?'font-weight="700" style="fill:var(--ink)"':""}>${monthShort(months[i])}</text>`;
+  });
+  $("#trend").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟรายรับ รายจ่าย และเงินออม 6 เดือนล่าสุด">${s}</svg>`;
+}
+function niceMax(v){ const p = Math.pow(10, Math.floor(Math.log10(v))); const n = v/p; const m = n<=1.5?1.5:n<=3?3:n<=6?6:10; return m*p; }
+
+/* ---------- render: shared ---------- */
+function renderShared(){
+  const exp = state.shared.filter(e => e.kind !== "settle");
+  const mexp = inMonth(exp, state.month);
+  const paid = {bill:0, gym:0}, share = {bill:0, gym:0};
+  mexp.forEach(e => { paid[e.paidBy] += Number(e.amount); share.bill += shareOf(e,"bill"); share.gym += shareOf(e,"gym"); });
+  const meals = mexp.filter(e => e.category === "อาหาร");
+  const mealCount = {bill:0, gym:0}, mealAmt = {bill:0, gym:0};
+  meals.forEach(e => { mealCount[e.paidBy]++; mealAmt[e.paidBy] += Number(e.amount); });
+  const lastMeal = exp.filter(e => e.category === "อาหาร").sort((a,b) => (a.date||"").localeCompare(b.date||"") || (a.createdAt||0)-(b.createdAt||0)).pop();
+  let turn = mealCount.bill === mealCount.gym ? (lastMeal ? other(lastMeal.paidBy) : state.me) : (mealCount.bill < mealCount.gym ? "bill" : "gym");
+  const bal = balance();
+
+  if (state.view === "shared"){
+    let speech, mood = "happy";
+    if (state.mode === "loading") { speech = "กำลังเปิดสมุดบัญชี…"; mood = "neutral"; }
+    else if (!exp.length) { speech = "ยังไม่มีค่าใช้จ่ายร่วม ลองจดค่าเช่าหรือมื้ออาหารมื้อแรกได้เลย"; mood = "neutral"; }
+    else if (Math.abs(bal) < 1) speech = "ยอดเคลียร์กันครบแล้ว ฟันเรียงสวยทั้งสองซี่";
+    else { speech = `${pname(bal>0?"gym":"bill")}ต้องโอนให้${pname(bal>0?"bill":"gym")} ${fmt(Math.abs(bal))} · มื้อหน้าตา${pname(turn)}เลี้ยง`; mood = "worried"; }
+    setHeader(mood, speech, null);
+  }
+
+  $("#duo").innerHTML = ["bill","gym"].map((p,i) => `
+    ${i===1?'<div class="vs">×</div>':""}
+    <div class="p ${p} ${turn===p?"turn":""}">
+      ${mascotSVG(turn===p?"happy":"neutral", p)}
+      <span class="small muted">${esc(pname(p))}จ่ายไป</span>
+      <b class="num">${fmt(paid[p])}</b>
+      <span class="small muted num">ส่วนที่ต้องรับผิดชอบ ${fmt(share[p])}</span>
+    </div>`).join("");
+  $("#turnMsg").textContent = meals.length || lastMeal ? `มื้อเดือนนี้: ${pname("bill")}เลี้ยง ${mealCount.bill} มื้อ · ${pname("gym")}เลี้ยง ${mealCount.gym} มื้อ → มื้อหน้าตา${pname(turn)}` : "ยังไม่มีมื้ออาหารที่จดไว้เดือนนี้";
+
+  const sb = $("#settleBox");
+  if (Math.abs(bal) < 1) sb.innerHTML = `<span>ยอดค้างทั้งหมด <b>เคลียร์ครบแล้ว</b></span>`;
+  else {
+    const from = bal > 0 ? "gym" : "bill", to = other(from);
+    sb.innerHTML = `<span>ยอดค้างสะสม: <b>${esc(pname(from))} → ${esc(pname(to))} ${fmt(Math.abs(bal))}</b></span>
+      <button class="btn gold" type="button" id="settleBtn" data-from="${from}" data-amt="${Math.abs(bal)}">${settleArmed?"แตะอีกครั้งเพื่อยืนยัน":"บันทึกว่าโอนเคลียร์แล้ว"}</button>`;
+  }
+
+  $("#bills").innerHTML = BILLS.map(b => {
+    const items = mexp.filter(e => e.category === b);
+    if (!items.length) return `<div class="billchip"><strong>${esc(b)}</strong><small>ยังไม่ได้จดเดือนนี้</small></div>`;
+    const amt = items.reduce((a,e)=>a+Number(e.amount),0);
+    const payers = [...new Set(items.map(e => pname(e.paidBy)))].join(" + ");
+    return `<div class="billchip done"><strong>${esc(b)}</strong><span class="num">${fmt(amt)}</span><small>${esc(payers)}จ่าย</small></div>`;
+  }).join("");
+
+  const recent = exp.filter(e => e.category === "อาหาร").sort((a,b) => (a.date||"").localeCompare(b.date||"") || (a.createdAt||0)-(b.createdAt||0)).slice(-12);
+  $("#meals").innerHTML = recent.length ? recent.map(e => `<div class="meal ${e.paidBy}" title="${esc(pname(e.paidBy))}จ่าย ${fmt(e.amount)} ${esc(e.note||"")}">${personTooth(e.paidBy)}<span>${esc(shortDate(e.date))}</span><span>${esc((e.meal||"").replace("มื้อ",""))}</span></div>`).join("")
+    : `<p class="muted" style="margin:0">ยังไม่มีมื้ออาหาร เลือกหมวด “อาหาร” ในแบบฟอร์มเพื่อเริ่มนับ</p>`;
+  $("#mealStats").innerHTML = ["bill","gym"].map(p => `<div><strong>${esc(pname(p))}</strong> เลี้ยง ${mealCount[p]} มื้อ · <span class="num">${fmt(mealAmt[p])}</span></div>`).join("");
+
+  // stacked category bars
+  const cat = {};
+  mexp.forEach(e => { cat[e.category] = cat[e.category] || {bill:0,gym:0}; cat[e.category][e.paidBy] += Number(e.amount); });
+  const rows = Object.entries(cat).sort((a,b) => (b[1].bill+b[1].gym)-(a[1].bill+a[1].gym));
+  if (!rows.length) $("#shBars").innerHTML = `<p class="muted" style="margin:0">ยังไม่มีค่าใช้จ่ายร่วมใน${esc(monthLabel(state.month))}</p>`;
+  else {
+    const max = rows[0][1].bill + rows[0][1].gym;
+    $("#shBars").innerHTML = rows.map(([k,v]) => `<div class="bar"><span class="lbl">${esc(k)}</span><span class="track"><span class="fill b" style="width:${(v.bill/max*100).toFixed(1)}%"></span><span class="fill g" style="width:${(v.gym/max*100).toFixed(1)}%"></span></span><span class="v num">${fmt(v.bill+v.gym)}</span></div>`).join("");
+  }
+
+  $("#shTotal").textContent = `รวมเดือนนี้ ${fmt(paid.bill + paid.gym)}`;
+  const list = inMonth(state.shared, state.month).sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
+  const ul = $("#shList");
+  if (!list.length){ ul.innerHTML = `<li class="empty">${mascotSVG("neutral","gym")}<span>${state.mode==="loading" ? "กำลังโหลดรายการ…" : "ยังไม่มีรายการเดือนนี้ เลือกว่าใครจ่าย ใส่จำนวนเงิน แล้วกด “บันทึกค่าใช้จ่ายร่วม”"}</span></li>`; return; }
+  ul.innerHTML = list.map(e => {
+    const confirming = state.pendingDelete === e.id;
+    const acts = `<span class="acts">${e.kind==="settle"?"":`<button type="button" data-shedit="${esc(e.id)}">แก้ไข</button>`}<button type="button" class="${confirming?"danger":""}" data-shdel="${esc(e.id)}">${confirming?"ยืนยันลบ":"ลบ"}</button></span>`;
+    if (e.kind === "settle") return `<li class="row settle"><span class="ic">${miniTooth("var(--gold)")}</span>
+      <span class="what"><strong>${esc(pname(e.from))}โอนเคลียร์ให้${esc(pname(e.to))}</strong><small>${esc(shortDate(e.date))} · ปรับยอดค้าง</small></span>
+      <span><span class="amt num">${fmt(e.amount)}</span>${acts}</span></li>`;
+    const pct = billPct(e);
+    const split = pct === 50 ? "หารครึ่ง" : (pct === 100 && e.paidBy==="bill") || (pct === 0 && e.paidBy==="gym") ? `${pname(e.paidBy)}เลี้ยง` : (pct === 0 && e.paidBy==="bill") ? `จ่ายแทน${pname("gym")}` : (pct === 100 && e.paidBy==="gym") ? `จ่ายแทน${pname("bill")}` : `${pname("bill")} ${pct}% : ${pname("gym")} ${100-pct}%`;
+    return `<li class="row p-${e.paidBy}"><span class="ic">${personTooth(e.paidBy)}</span>
+      <span class="what"><strong>${esc(e.note || e.category)}${e.example?'<span class="tag">ตัวอย่าง</span>':""}</strong>
+      <small>${esc(shortDate(e.date))} · ${esc(e.category)}${e.meal?" · "+esc(e.meal):""} · ${esc(pname(e.paidBy))}จ่าย · ${esc(split)}</small></span>
+      <span><span class="amt num">${fmt(e.amount)}</span>${acts}</span></li>`;
+  }).join("");
+}
+
+/* ---------- tax ---------- */
+function computeTax(owner, year){
+  const inc = state.ledger.filter(t => ownerOf(t) === owner && t.type === "income" && (t.date||"").startsWith(String(year)));
+  const g = {"40(1)":0,"40(2)":0,"40(6)":0,"40(8)":0,"exempt":0}, w = {...g};
+  inc.forEach(t => { const k = taxTypeOf(t); g[k] += Number(t.amount)||0; w[k] += Number(t.wht)||0; });
+  const ded = {
+    "40(1)": 0, "40(2)": 0,
+    "40(6)": g["40(6)"] * .6,
+    "40(8)": g["40(8)"] * .6,
+    "exempt": 0
+  };
+  const ded12 = Math.min(100000, (g["40(1)"] + g["40(2)"]) * .5);
+  const s12 = g["40(1)"] + g["40(2)"];
+  if (s12){ ded["40(1)"] = ded12 * g["40(1)"]/s12; ded["40(2)"] = ded12 * g["40(2)"]/s12; }
+  const gross = g["40(1)"] + g["40(2)"] + g["40(6)"] + g["40(8)"];
+  const expTotal = ded12 + ded["40(6)"] + ded["40(8)"];
+  const al = (state.taxDocs[owner+"-"+year] || {}).allow || {};
+  const allowList = [["personal","ลดหย่อนส่วนตัว",60000], ...ALLOW.map(([k,l]) => [k,l,Number(al[k])||0])];
+  const allowTotal = allowList.reduce((a,x)=>a+x[2],0);
+  const net = Math.max(0, gross - expTotal - allowTotal);
+  let rest = net, prev = 0, tax1 = 0; const steps = [];
+  for (const [cap, rate] of BRACKETS){
+    const part = Math.max(0, Math.min(rest, cap - prev));
+    if (part > 0) steps.push({from: prev, to: cap, rate, part, tax: part*rate});
+    tax1 += part*rate; rest -= part; prev = cap; if (rest <= 0) break;
+  }
+  const nonSalary = g["40(2)"] + g["40(6)"] + g["40(8)"];
+  let tax2 = nonSalary >= 1000000 ? nonSalary * .005 : 0;
+  if (tax2 <= 5000) tax2 = 0;
+  const tax = Math.max(tax1, tax2);
+  const whtTotal = Object.values(w).reduce((a,b)=>a+b,0);
+  const half = inc.some(t => (taxTypeOf(t)==="40(6)"||taxTypeOf(t)==="40(8)") && Number(t.date.slice(5,7)) <= 6);
+  return {inc, g, w, ded, gross, expTotal, allowList, allowTotal, net, steps, tax1, tax2, tax, whtTotal, diff: tax - whtTotal, form: nonSalary > 0 ? "ภ.ง.ด.90" : "ภ.ง.ด.91", half};
+}
+function renderTax(){
+  const R = computeTax(state.me, state.year);
+  const yBE = state.year + 543;
+  $("#yearName").textContent = `ปีภาษี ${yBE}`;
+  if (state.view === "tax"){
+    const mood = R.inc.length ? (R.diff > 0 ? "worried" : "happy") : "neutral";
+    const speech = !R.inc.length ? `${pname(state.me)}ยังไม่มีรายรับในปีภาษี ${yBE}` : R.diff > 0 ? `ประมาณว่าต้องชำระเพิ่ม ${fmt(R.diff)} ตอนยื่น ${R.form}` : R.diff < 0 ? `ประมาณว่าขอคืนภาษีได้ ${fmt(-R.diff)}` : "ภาษีที่ถูกหักไว้พอดีกับที่ต้องเสีย";
+    setHeader(mood, speech, state.me);
+  }
+  $("#taxRows").innerHTML = TAX_TYPES.map(([k,l]) => `<tr><td>${esc(l)}</td><td class="r">${fmt2(R.g[k])}</td><td class="r">${k==="exempt"?"—":fmt2(R.ded[k])}</td><td class="r">${fmt2(R.w[k])}</td></tr>`).join("")
+    + `<tr class="total"><td>รวม</td><td class="r">${fmt2(R.gross + R.g.exempt)}</td><td class="r">${fmt2(R.expTotal)}</td><td class="r">${fmt2(R.whtTotal)}</td></tr>`;
+  $("#formBadge").textContent = R.form;
+  $("#formNote").innerHTML = `ใช้แบบ <strong>${R.form}</strong> ${R.form==="ภ.ง.ด.90" ? "เพราะมีเงินได้ประเภทอื่นนอกจากเงินเดือน" : "เพราะมีเฉพาะเงินเดือน 40(1)"} · ยื่นภายใน 31 มีนาคม ${yBE+1}${R.half ? ` · มีเงินได้ 40(6)/40(8) ช่วง ม.ค.–มิ.ย. จึงต้องยื่น ภ.ง.ด.94 (ครึ่งปี) ภายในสิ้นเดือนกันยายน ${yBE}` : ""}`;
+  const rows = R.inc.slice().sort((a,b) => a.date.localeCompare(b.date));
+  $("#incRows").innerHTML = rows.length ? rows.map(t => `<tr><td>${esc(shortDate(t.date))}</td><td>${esc(t.note||t.category)}${t.example?'<span class="tag">ตัวอย่าง</span>':""}</td><td>${esc(TAX_SHORT[taxTypeOf(t)])}</td><td class="r">${fmt2(t.amount)}</td><td class="r">${fmt2(Number(t.wht)||0)}</td></tr>`).join("")
+    : `<tr><td colspan="5" class="muted">ยังไม่มีรายรับในปีภาษีนี้ จดรายรับที่แท็บบัญชีส่วนตัวแล้วเลือกประเภทเงินได้</td></tr>`;
+  $("#calc").innerHTML = `
+    <div><span>เงินได้พึงประเมินที่ต้องเสียภาษี</span><span>${fmt2(R.gross)}</span></div>
+    <div><span>หัก ค่าใช้จ่าย</span><span>−${fmt2(R.expTotal)}</span></div>
+    <div><span>หัก ค่าลดหย่อนรวม</span><span>−${fmt2(R.allowTotal)}</span></div>
+    <div><strong>เงินได้สุทธิ</strong><strong class="num">${fmt2(R.net)}</strong></div>
+    ${R.steps.map(s => `<div class="muted small"><span>ขั้น ${s.from.toLocaleString("th-TH")}–${s.to===Infinity?"ขึ้นไป":s.to.toLocaleString("th-TH")} @ ${Math.round(s.rate*100)}%</span><span>${fmt2(s.tax)}</span></div>`).join("")}
+    ${R.tax2 ? `<div class="muted small"><span>วิธีที่ 2: 0.5% ของเงินได้ที่ไม่ใช่ 40(1)</span><span>${fmt2(R.tax2)}</span></div>` : ""}
+    <div><span>ภาษีที่ต้องเสีย</span><span>${fmt2(R.tax)}</span></div>
+    <div><span>หัก ภาษีหัก ณ ที่จ่าย</span><span>−${fmt2(R.whtTotal)}</span></div>
+    <div class="big"><span>${R.diff > 0 ? "ต้องชำระเพิ่ม" : R.diff < 0 ? "ขอคืนได้" : "ไม่มียอดชำระเพิ่มหรือขอคืน"}</span><span>${fmt2(Math.abs(R.diff))}</span></div>`;
+  // allowance fields (only rebuild when not focused, so typing is not interrupted)
+  const box = $("#allowFields");
+  const key = state.me+"-"+state.year;
+  if (box.dataset.key !== key || !box.contains(document.activeElement)){
+    const al = (state.taxDocs[key] || {}).allow || {};
+    box.innerHTML = ALLOW.map(([k,l]) => `<div class="field"><label for="al-${k}">${esc(l)}</label><input id="al-${k}" data-al="${k}" inputmode="decimal" class="num" placeholder="0" value="${al[k] ? esc(al[k]) : ""}"></div>`).join("");
+    box.dataset.key = key;
+  }
+  $("#dlBtn").hidden = !downloads;
+  
+}
+
+/* ---------- xlsx export ---------- */
+function loadXLSX(){
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload = () => res(window.XLSX); s.onerror = () => rej(new Error("load"));
+    document.head.appendChild(s);
+  });
+}
+async function exportTax(){
+  const m = $("#dlMsg"); m.className = "msg";
+  if (!downloads) return;
+  m.textContent = "กำลังเตรียมไฟล์…";
+  let X; try { X = await loadXLSX(); } catch(e){ m.textContent = "โหลดตัวสร้างไฟล์ Excel ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง"; m.className = "msg err"; return; }
+  const R = computeTax(state.me, state.year), yBE = state.year + 543, r2 = n => Math.round(n*100)/100;
+  const s1 = [
+    [`สรุปเงินได้เพื่อยื่นภาษีเงินได้บุคคลธรรมดา ปีภาษี ${yBE}`],
+    ["ผู้มีเงินได้", pname(state.me)],
+    ["แบบที่ใช้ยื่น", R.form + (R.half ? " (และ ภ.ง.ด.94 ครึ่งปี)" : "")],
+    ["จัดทำเมื่อ", new Date().toLocaleDateString("th-TH",{dateStyle:"long"})],
+    [],
+    ["ประเภทเงินได้","เงินได้พึงประเมิน (บาท)","หักค่าใช้จ่าย (บาท)","อัตราหักค่าใช้จ่าย","ภาษีหัก ณ ที่จ่าย (บาท)"],
+    ...TAX_TYPES.map(([k,l]) => [l, r2(R.g[k]), k==="exempt"?0:r2(R.ded[k]), {"40(1)":"50% รวมกับ 40(2) ไม่เกิน 100,000","40(2)":"50% รวมกับ 40(1) ไม่เกิน 100,000","40(6)":"เหมา 60% (ประกอบโรคศิลปะ)","40(8)":"เหมา 60% (ตรวจอัตราตามชนิดเงินได้)","exempt":"ไม่นำมาคำนวณ"}[k], r2(R.w[k])]),
+    ["รวม", r2(R.gross + R.g.exempt), r2(R.expTotal), "", r2(R.whtTotal)],
+    [],
+    ["การคำนวณ","จำนวนเงิน (บาท)"],
+    ["เงินได้พึงประเมินที่ต้องเสียภาษี", r2(R.gross)],
+    ["หัก ค่าใช้จ่าย", r2(R.expTotal)],
+    ["หัก ค่าลดหย่อนรวม", r2(R.allowTotal)],
+    ["เงินได้สุทธิ", r2(R.net)],
+    ...R.steps.map(s => [`  ขั้น ${s.from.toLocaleString("th-TH")}–${s.to===Infinity?"ขึ้นไป":s.to.toLocaleString("th-TH")} อัตรา ${Math.round(s.rate*100)}%`, r2(s.tax)]),
+    ["ภาษีวิธีที่ 1 (ขั้นบันได)", r2(R.tax1)],
+    ["ภาษีวิธีที่ 2 (0.5% ของเงินได้ที่ไม่ใช่ 40(1))", r2(R.tax2)],
+    ["ภาษีที่ต้องเสีย", r2(R.tax)],
+    ["หัก ภาษีหัก ณ ที่จ่าย", r2(R.whtTotal)],
+    [R.diff > 0 ? "ต้องชำระเพิ่ม" : "ขอคืนได้", r2(Math.abs(R.diff))],
+    [],
+    ["หมายเหตุ: เป็นการประมาณการเบื้องต้น ตรวจสอบกับหนังสือรับรองการหักภาษี ณ ที่จ่าย (50 ทวิ) และระบบ e-Filing ของกรมสรรพากรก่อนยื่นจริง"]
+  ];
+  const s2 = [["วันที่","รายการ","หมวด","ประเภทเงินได้","จำนวนเงิน (บาท)","ภาษีหัก ณ ที่จ่าย (บาท)","หมายเหตุ"],
+    ...R.inc.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(t => [t.date, t.note||t.category, t.category, TAX_SHORT[taxTypeOf(t)], r2(Number(t.amount)), r2(Number(t.wht)||0), t.example?"ตัวอย่าง":""])];
+  const s3 = [["รายการลดหย่อน","จำนวนเงิน (บาท)"], ...R.allowList.map(([,l,v]) => [l, r2(v)]), ["รวม", r2(R.allowTotal)]];
+  const wb = X.utils.book_new();
+  const ws1 = X.utils.aoa_to_sheet(s1); ws1["!cols"] = [{wch:46},{wch:22},{wch:20},{wch:34},{wch:22}];
+  const ws2 = X.utils.aoa_to_sheet(s2); ws2["!cols"] = [{wch:12},{wch:34},{wch:24},{wch:12},{wch:16},{wch:20},{wch:10}];
+  const ws3 = X.utils.aoa_to_sheet(s3); ws3["!cols"] = [{wch:40},{wch:18}];
+  X.utils.book_append_sheet(wb, ws1, "สรุปภาษี");
+  X.utils.book_append_sheet(wb, ws2, "รายการเงินได้");
+  X.utils.book_append_sheet(wb, ws3, "ค่าลดหย่อน");
+  const buf = X.write(wb, {bookType:"xlsx", type:"array"});
+  try {
+    await downloads.save({filename: `tax-summary-${state.me}-${yBE}.xlsx`, data: buf});
+    m.textContent = "ดาวน์โหลดไฟล์แล้ว";
+  } catch(e){
+    m.textContent = e && e.code === "declined" ? "ยกเลิกการดาวน์โหลดแล้ว" : e && e.code === "rate_limited" ? "มีหน้าต่างดาวน์โหลดเปิดอยู่ ลองอีกครั้งในอีกสักครู่" : "ดาวน์โหลดไม่ได้ในมุมมองนี้";
+    if (e && e.code !== "declined") m.className = "msg err";
+  }
+}
+
+/* ---------- personal form ---------- */
+function setType(t, keepCat){
+  state.type = t;
+  $$("#typeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t===t)));
+  const sel = $("#fCat"), prev = sel.value;
+  sel.innerHTML = CATS[t].map(c => `<option>${esc(c)}</option>`).join("");
+  if (keepCat && CATS[t].includes(keepCat)) sel.value = keepCat;
+  else if (CATS[t].includes(prev)) sel.value = prev;
+  $("#quick").innerHTML = QUICK[t].map(([c,n]) => `<button type="button" data-qc="${esc(c)}" data-qn="${esc(n)}">${esc(n)}</button>`).join("");
+  $("#taxFields").hidden = t !== "income";
+  if (t === "income" && !state.editingId) $("#fTax").value = TAX_DEFAULT[sel.value] || "40(8)";
+}
+function resetForm(){
+  state.editingId = null;
+  $("#fAmount").value = ""; $("#fNote").value = ""; $("#fWht").value = "";
+  $("#fDate").value = state.month === todayISO.slice(0,7) ? todayISO : state.month + "-01";
+  $("#fTax").value = TAX_DEFAULT[$("#fCat").value] || "40(8)";
+  $("#submitBtn").textContent = "บันทึกรายการ";
+  $("#formTitle").textContent = "จดรายการใหม่";
+  $("#cancelEdit").hidden = true;
+}
+function msg(el, t, err){ el.textContent = t; el.className = "msg" + (err?" err":""); }
+$("#fTax").innerHTML = TAX_TYPES.map(([k,l]) => `<option value="${k}">${esc(l)}</option>`).join("");
+$("#fCat").addEventListener("change", () => { if (state.type === "income") $("#fTax").value = TAX_DEFAULT[$("#fCat").value] || "40(8)"; });
+$("#txForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#formMsg");
+  const amount = num($("#fAmount").value), date = $("#fDate").value;
+  if (!amount || amount <= 0) { msg(m, "ใส่จำนวนเงินเป็นตัวเลขที่มากกว่า 0", true); $("#fAmount").focus(); return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { msg(m, "เลือกวันที่ของรายการก่อนบันทึก", true); return; }
+  const wht = state.type === "income" ? (num($("#fWht").value) || 0) : 0;
+  if (wht < 0 || wht > amount) { msg(m, "ภาษีหัก ณ ที่จ่ายต้องไม่ติดลบและไม่เกินจำนวนเงิน", true); $("#fWht").focus(); return; }
+  const prev = state.editingId ? state.ledger.find(x => x.id === state.editingId) : null;
+  const t = { owner: prev ? ownerOf(prev) : state.me, type: state.type, amount: Math.round(amount*100)/100, category: $("#fCat").value, note: $("#fNote").value.trim(), date, createdAt: prev?.createdAt || Date.now() };
+  if (state.type === "income"){ t.taxType = $("#fTax").value; t.wht = Math.round(wht*100)/100; }
+  if (prev?.example) t.example = true;
+  try {
+    if (state.editingId) { await store.update("ledger", state.editingId, t); msg(m, "แก้ไขรายการแล้ว"); }
+    else { await store.add("ledger", t); msg(m, `บันทึก${TYPE_LABEL[t.type]} ${fmt(t.amount)} แล้ว`); }
+    if (date.slice(0,7) !== state.month){ state.month = date.slice(0,7); state.day = null; render(); }
+    resetForm();
+  } catch(err){ msg(m, "บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง", true); }
+});
+$("#cancelEdit").addEventListener("click", () => { resetForm(); msg($("#formMsg"), ""); });
+$("#typeSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setType(b.dataset.t); });
+$("#quick").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; $("#fCat").value = b.dataset.qc; $("#fNote").value = b.dataset.qn; if (state.type==="income") $("#fTax").value = TAX_DEFAULT[b.dataset.qc] || "40(8)"; $("#fAmount").focus(); });
+
+function armDelete(id){
+  state.pendingDelete = id; render();
+  setTimeout(() => { if (state.pendingDelete === id){ state.pendingDelete = null; render(); } }, 4000);
+}
+$("#list").addEventListener("click", async e => {
+  const ed = e.target.closest("[data-edit]"), del = e.target.closest("[data-del]");
+  if (ed){
+    const t = state.ledger.find(x => x.id === ed.dataset.edit); if (!t) return;
+    state.editingId = t.id; setType(t.type, t.category);
+    $("#fAmount").value = t.amount; $("#fNote").value = t.note || ""; $("#fDate").value = t.date;
+    if (t.type === "income"){ $("#fTax").value = taxTypeOf(t); $("#fWht").value = t.wht || ""; }
+    $("#submitBtn").textContent = "บันทึกการแก้ไข"; $("#formTitle").textContent = "แก้ไขรายการ"; $("#cancelEdit").hidden = false; msg($("#formMsg"), "");
+    $("#txForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#fAmount").focus({preventScroll:true});
+  }
+  if (del){
+    const id = del.dataset.del;
+    if (state.pendingDelete !== id){ armDelete(id); return; }
+    state.pendingDelete = null;
+    try { await store.remove("ledger", id); } catch(err){ msg($("#formMsg"), "ลบไม่สำเร็จ ลองอีกครั้ง", true); }
+  }
+});
+document.querySelector(".filters").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.filter = b.dataset.f;
+  $$(".filters .chip").forEach(c => c.setAttribute("aria-pressed", String(c===b)));
+  render();
+});
+function pickDay(el){ const d = Number(el.dataset.day); state.day = state.day === d ? null : d; render(); }
+$("#arch").addEventListener("click", e => { const g = e.target.closest(".tooth-day"); if (g) pickDay(g); });
+$("#arch").addEventListener("keydown", e => { const g = e.target.closest(".tooth-day"); if (g && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); pickDay(g); } });
+$("#dayFlag").addEventListener("click", e => { if (e.target.id === "clearDay"){ state.day = null; render(); } });
+$$("[data-mshift]").forEach(b => b.addEventListener("click", () => { state.month = shiftMonth(state.month, Number(b.dataset.mshift)); state.day = null; resetForm(); resetShForm(); render(); }));
+$$("[data-yshift]").forEach(b => b.addEventListener("click", () => { state.year += Number(b.dataset.yshift); render(); }));
+
+$("#editGoal").addEventListener("click", () => {
+  const f = $("#goalForm"); f.hidden = !f.hidden;
+  if (!f.hidden){ const g = goalOf(state.me); $("#gName").value = g.name; $("#gAmount").value = g.amount; $("#gName").focus(); }
+});
+$("#saveGoal").addEventListener("click", async () => {
+  const amt = num($("#gAmount").value);
+  if (!amt || amt <= 0) { $("#gAmount").focus(); return; }
+  const goals = {bill: goalOf("bill"), gym: goalOf("gym")};
+  goals[state.me] = {name: $("#gName").value.trim() || DEFAULT_GOALS[state.me].name, amount: amt};
+  try { await store.settings({goals}); $("#goalForm").hidden = true; } catch(e){}
+});
+
+/* ---------- shared form ---------- */
+$("#sCat").innerHTML = SH_CATS.map(c => `<option>${esc(c)}</option>`).join("");
+$("#sMeal").innerHTML = MEALS.map(c => `<option>${esc(c)}</option>`).join("");
+function setPayer(p){ state.payer = p; $$("#payerSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === p))); }
+function syncShFields(){ $("#mealField").hidden = $("#sCat").value !== "อาหาร"; $("#pctField").hidden = $("#sSplit").value !== "custom"; }
+function resetShForm(){
+  state.shEditingId = null;
+  $("#sAmount").value = ""; $("#sNote").value = ""; $("#sPct").value = ""; $("#sSplit").value = "half";
+  $("#sDate").value = state.month === todayISO.slice(0,7) ? todayISO : state.month + "-01";
+  $("#shSubmit").textContent = "บันทึกค่าใช้จ่ายร่วม"; $("#shFormTitle").textContent = "จดค่าใช้จ่ายร่วม"; $("#shCancel").hidden = true;
+  syncShFields();
+}
+$("#payerSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setPayer(b.dataset.p); });
+$("#sCat").addEventListener("change", syncShFields);
+$("#sSplit").addEventListener("change", syncShFields);
+$("#shCancel").addEventListener("click", () => { resetShForm(); msg($("#shMsg"), ""); });
+$("#shForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#shMsg");
+  const amount = num($("#sAmount").value), date = $("#sDate").value, split = $("#sSplit").value;
+  if (!amount || amount <= 0) { msg(m, "ใส่จำนวนเงินเป็นตัวเลขที่มากกว่า 0", true); $("#sAmount").focus(); return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { msg(m, "เลือกวันที่ก่อนบันทึก", true); return; }
+  let pct = 50;
+  if (split === "payer") pct = state.payer === "bill" ? 100 : 0;
+  else if (split === "other") pct = state.payer === "bill" ? 0 : 100;
+  else if (split === "custom"){ pct = num($("#sPct").value); if (!(pct >= 0 && pct <= 100) || $("#sPct").value === ""){ msg(m, "ใส่ส่วนของบิลเป็นเปอร์เซ็นต์ 0–100", true); $("#sPct").focus(); return; } }
+  const prev = state.shEditingId ? state.shared.find(x => x.id === state.shEditingId) : null;
+  const d = { kind:"expense", paidBy: state.payer, amount: Math.round(amount*100)/100, category: $("#sCat").value, billPct: pct, split, note: $("#sNote").value.trim(), date, createdAt: prev?.createdAt || Date.now() };
+  if (d.category === "อาหาร") d.meal = $("#sMeal").value;
+  if (prev?.example) d.example = true;
+  try {
+    if (state.shEditingId){ await store.update("shared", state.shEditingId, d); msg(m, "แก้ไขรายการแล้ว"); }
+    else { await store.add("shared", d); msg(m, `บันทึก: ${pname(d.paidBy)}จ่าย ${fmt(d.amount)}`); }
+    if (date.slice(0,7) !== state.month){ state.month = date.slice(0,7); render(); }
+    resetShForm();
+  } catch(err){ msg(m, "บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง", true); }
+});
+$("#shList").addEventListener("click", async e => {
+  const ed = e.target.closest("[data-shedit]"), del = e.target.closest("[data-shdel]");
+  if (ed){
+    const d = state.shared.find(x => x.id === ed.dataset.shedit); if (!d) return;
+    state.shEditingId = d.id; setPayer(d.paidBy);
+    $("#sAmount").value = d.amount; $("#sCat").value = d.category; if (d.meal) $("#sMeal").value = d.meal;
+    $("#sSplit").value = d.split || (billPct(d) === 50 ? "half" : "custom"); $("#sPct").value = billPct(d);
+    $("#sDate").value = d.date; $("#sNote").value = d.note || "";
+    $("#shSubmit").textContent = "บันทึกการแก้ไข"; $("#shFormTitle").textContent = "แก้ไขค่าใช้จ่ายร่วม"; $("#shCancel").hidden = false;
+    syncShFields(); msg($("#shMsg"), "");
+    $("#shForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#sAmount").focus({preventScroll:true});
+  }
+  if (del){
+    const id = del.dataset.shdel;
+    if (state.pendingDelete !== id){ armDelete(id); return; }
+    state.pendingDelete = null;
+    try { await store.remove("shared", id); } catch(err){ msg($("#shMsg"), "ลบไม่สำเร็จ ลองอีกครั้ง", true); }
+  }
+});
+let settleArmed = false;
+$("#settleBox").addEventListener("click", async e => {
+  const b = e.target.closest("#settleBtn"); if (!b) return;
+  if (!settleArmed){ settleArmed = true; render(); setTimeout(() => { if (settleArmed){ settleArmed = false; render(); } }, 4000); return; }
+  settleArmed = false;
+  const from = b.dataset.from;
+  try { await store.add("shared", {kind:"settle", from, to: other(from), amount: Math.round(Number(b.dataset.amt)*100)/100, date: todayISO, createdAt: Date.now()}); }
+  catch(err){ msg($("#shMsg"), "บันทึกการเคลียร์ยอดไม่สำเร็จ ลองอีกครั้ง", true); }
+});
+
+/* ---------- tax form ---------- */
+$("#allowForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const allow = {};
+  for (const inp of $$("#allowFields input")){
+    const v = inp.value.trim() === "" ? 0 : num(inp.value);
+    if (!(v >= 0)) { msg($("#allowMsg"), "ใส่ค่าลดหย่อนเป็นตัวเลขที่ไม่ติดลบ", true); inp.focus(); return; }
+    if (v) allow[inp.dataset.al] = v;
+  }
+  try { document.activeElement.blur(); await store.tax(state.me+"-"+state.year, {owner: state.me, year: state.year, allow}); msg($("#allowMsg"), "บันทึกค่าลดหย่อนแล้ว"); render(); }
+  catch(err){ msg($("#allowMsg"), "บันทึกไม่สำเร็จ ลองอีกครั้ง", true); }
+});
+$("#dlBtn").addEventListener("click", exportTax);
+
+/* ---------- todo + cards ---------- */
+const parseISO = iso => { const [y,m,d] = iso.split("-").map(Number); return new Date(y,m-1,d); };
+const dayDiff = iso => Math.round((parseISO(iso) - parseISO(todayISO)) / 864e5);
+const level = d => d < 0 ? "over" : d <= 3 ? "urgent" : d <= 7 ? "soon" : "later";
+const dueText = d => d < 0 ? `เลยกำหนด ${-d} วัน` : d === 0 ? "ครบกำหนดวันนี้" : d === 1 ? "ครบกำหนดพรุ่งนี้" : `อีก ${d} วัน`;
+const clampDay = (ym, day) => ym + "-" + pad(Math.min(Number(day), daysIn(ym)));
+const visibleTo = (o, me) => (o || "bill") === me || o === "both";
+const strip = o => { const c = {...o}; delete c.id; return c; };
+const CHECK = '<svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="var(--surface)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function cardDue(c){
+  let ym = todayISO.slice(0,7);
+  if (c.startYm && ym < c.startYm) ym = c.startYm;
+  while ((c.paidMonths || []).includes(ym)) ym = shiftMonth(ym, 1);
+  const iso = clampDay(ym, c.dueDay);
+  return {ym, iso, days: dayDiff(iso), paidThis: (c.paidMonths || []).includes(todayISO.slice(0,7))};
+}
+function reminderItems(me){
+  const items = [];
+  state.cards.filter(c => visibleTo(c.owner, me)).forEach(c => { const d = cardDue(c); if (d.days <= 7) items.push({kind:"card", id:c.id, title:c.name, sub:`บัตรของ${OWNER_LABEL(c.owner||"bill")}`, iso:d.iso, days:d.days, amount:Number(c.amountDue)||0}); });
+  state.todos.filter(t => !t.done && t.dueDate && visibleTo(t.owner, me)).forEach(t => { const d = dayDiff(t.dueDate); if (d <= 7) items.push({kind:"todo", id:t.id, title:t.title, sub:OWNER_LABEL(t.owner||"bill"), iso:t.dueDate, days:d, amount:Number(t.amount)||0}); });
+  return items.sort((a,b) => a.days - b.days);
+}
+function renderReminders(){
+  const items = reminderItems(state.me);
+  const urgent = items.filter(i => i.days <= 3).length, over = items.filter(i => i.days < 0).length;
+  $("#remindIcon").innerHTML = miniTooth(over ? "var(--gum)" : urgent ? "var(--gold)" : "var(--mint)", over > 0);
+  $("#remindSub").textContent = items.length ? `${items.length} รายการภายใน 7 วัน${over ? ` · เลยกำหนด ${over}` : ""}` : "";
+  const badge = $("#todoBadge"); badge.hidden = !urgent; badge.textContent = urgent;
+  $("#remindList").innerHTML = state.mode === "loading" ? '<p class="remind-empty">กำลังโหลดรายการเตือน…</p>'
+    : items.length ? items.map(i => `<div class="rem ${level(i.days)}">
+        <strong>${esc(i.title)}</strong>
+        <small>${esc(i.sub)} · ${esc(shortDate(i.iso))}${i.amount ? ` · <span class="num">${fmt(i.amount)}</span>` : ""}</small>
+        <div class="rem-act"><span class="pill ${level(i.days)}">${esc(dueText(i.days))}</span>
+          <button type="button" data-rem="${i.kind}" data-id="${esc(i.id)}">${i.kind === "card" ? "ชำระแล้ว" : "จ่ายแล้ว"}</button></div>
+      </div>`).join("")
+    : `<p class="remind-empty">ไม่มีบิลหรือบัตรของ${esc(pname(state.me))}ที่ครบกำหนดใน 7 วันนี้ เพิ่มรายการได้ที่แท็บ “เช็กลิสต์ &amp; บัตร”</p>`;
+}
+function renderTodo(){
+  const me = state.me;
+  const list = state.todos.filter(t => state.todoFilter === "all" || visibleTo(t.owner, me));
+  const open = list.filter(t => !t.done).sort((a,b) => (a.dueDate||"9999").localeCompare(b.dueDate||"9999"));
+  const done = list.filter(t => t.done).sort((a,b) => (b.doneAt||"").localeCompare(a.doneAt||"")).slice(0,8);
+  const groups = [
+    ["over","เลยกำหนด", open.filter(t => t.dueDate && dayDiff(t.dueDate) < 0)],
+    ["","ภายใน 7 วัน", open.filter(t => t.dueDate && dayDiff(t.dueDate) >= 0 && dayDiff(t.dueDate) <= 7)],
+    ["","ถัดไป", open.filter(t => !t.dueDate || dayDiff(t.dueDate) > 7)],
+    ["","จ่ายแล้วล่าสุด", done]
+  ];
+  if (state.view === "todo"){
+    const items = reminderItems(me), over = items.filter(i => i.days < 0).length;
+    setHeader(over ? "sad" : items.length ? "worried" : "happy",
+      state.mode === "loading" ? "กำลังเปิดสมุดบัญชี…" : over ? `มี ${over} รายการเลยกำหนดแล้ว รีบจัดการก่อนเสียดอกเบี้ยนะ` : items.length ? `อีก 7 วันมี ${items.length} รายการต้องจ่าย` : "ไม่มีอะไรค้างใน 7 วันนี้ ฟันสะอาดเอี่ยม", me);
+  }
+  const row = t => {
+    const d = t.dueDate ? dayDiff(t.dueDate) : null;
+    const confirming = state.pendingDelete === t.id;
+    const meta = [t.dueDate ? (t.done || d <= 7 ? shortDate(t.dueDate) : `${shortDate(t.dueDate)} · ${dueText(d)}`) : "ไม่กำหนดวัน", OWNER_LABEL(t.owner||"bill"), t.category].filter(Boolean).join(" · ");
+    return `<div class="todo ${t.done ? "done" : ""}">
+      <button type="button" class="check" data-tcheck="${esc(t.id)}" aria-pressed="${t.done ? "true" : "false"}" aria-label="${t.done ? "ทำเครื่องหมายว่ายังไม่จ่าย" : "ทำเครื่องหมายว่าจ่ายแล้ว"}: ${esc(t.title)}">${CHECK}</button>
+      <span class="what"><strong>${esc(t.title)}${t.example ? '<span class="tag">ตัวอย่าง</span>' : ""}${t.repeat === "monthly" ? '<span class="tag">ทุกเดือน</span>' : ""}</strong>
+        <small>${esc(meta)}${!t.done && d !== null && d <= 7 ? ` <span class="pill ${level(d)}">${esc(dueText(d))}</span>` : ""}</small></span>
+      <span>${Number(t.amount) ? `<span class="amt num">${fmt(t.amount)}</span>` : ""}
+        <span class="acts-line">${t.done ? "" : `<button type="button" data-tedit="${esc(t.id)}">แก้ไข</button>`}<button type="button" class="${confirming ? "danger" : ""}" data-tdel="${esc(t.id)}">${confirming ? "ยืนยันลบ" : "ลบ"}</button></span></span>
+    </div>`;
+  };
+  const html = groups.filter(g => g[2].length).map(([cls,label,items]) => `<p class="group-label ${cls}">${label} (${items.length})</p>${items.map(row).join("")}`).join("");
+  $("#todoList").innerHTML = html || `<div class="empty">${mascotSVG("neutral", me)}<span>${state.mode === "loading" ? "กำลังโหลดเช็กลิสต์…" : "ยังไม่มีรายการที่ต้องจ่าย พิมพ์ชื่อรายการในแบบฟอร์มแล้วกด “เพิ่มในเช็กลิสต์”"}</span></div>`;
+
+  const cards = state.cards.filter(c => state.todoFilter === "all" || visibleTo(c.owner, me)).map(c => ({c, d: cardDue(c)})).sort((a,b) => a.d.days - b.d.days);
+  $("#cardList").innerHTML = cards.length ? cards.map(({c,d}) => {
+    const confirming = state.pendingDelete === c.id;
+    const pill = d.paidThis && d.days > 7 ? `<span class="pill done">ชำระรอบ${esc(monthShort(todayISO.slice(0,7)))}แล้ว</span>` : `<span class="pill ${level(d.days)}">${esc(dueText(d.days))}</span>`;
+    return `<div class="cardrow"><span class="cc" aria-hidden="true"></span>
+      <span class="what"><strong>${esc(c.name)}${c.example ? '<span class="tag">ตัวอย่าง</span>' : ""}</strong>
+        <small>ครบกำหนดทุกวันที่ ${esc(c.dueDay)} · รอบถัดไป ${esc(shortDate(d.iso))} · ${esc(OWNER_LABEL(c.owner||"bill"))}${c.note ? " · " + esc(c.note) : ""}</small></span>
+      <span class="right">${pill}${Number(c.amountDue) ? `<span class="num" style="font-weight:700">${fmt(c.amountDue)}</span>` : ""}
+        <span class="acts-line">${d.paidThis ? `<button type="button" data-cunpay="${esc(c.id)}">ยกเลิกชำระแล้ว</button>` : `<button type="button" class="go" data-cpay="${esc(c.id)}">ชำระแล้ว</button>`}<button type="button" data-cedit="${esc(c.id)}">แก้ไข</button><button type="button" class="${confirming ? "danger" : ""}" data-cdel="${esc(c.id)}">${confirming ? "ยืนยันลบ" : "ลบ"}</button></span></span>
+    </div>`;
+  }).join("") : `<p class="muted" style="margin:0">${state.mode === "loading" ? "กำลังโหลด…" : "ยังไม่มีบัตร เพิ่มชื่อบัตรและวันครบกำหนดในแบบฟอร์ม “เพิ่มบัตรเครดิต”"}</p>`;
+}
+async function toggleTodo(id){
+  const t = state.todos.find(x => x.id === id); if (!t) return;
+  const data = strip(t), m = $("#tdMsg");
+  try {
+    if (!t.done){
+      const amount = Number(t.amount) || 0;
+      if (t.autoLog && amount > 0){
+        if (t.owner === "both") await store.add("shared", {kind:"expense", paidBy: state.me, amount, category: SH_CATS.includes(t.category) ? t.category : "อื่นๆ", billPct:50, split:"half", note:t.title, date: todayISO, createdAt: Date.now()});
+        else await store.add("ledger", {owner: t.owner || "bill", type:"expense", amount, category: CATS.expense.includes(t.category) ? t.category : "รายจ่ายอื่น", note:t.title, date: todayISO, createdAt: Date.now()});
+      }
+      if (t.repeat === "monthly" && t.dueDate){
+        data.dueDate = clampDay(shiftMonth(t.dueDate.slice(0,7), 1), t.dueDay || t.dueDate.slice(8));
+        data.lastDone = todayISO;
+        msg(m, `จ่ายแล้ว${t.autoLog && amount ? " และจดเป็นรายจ่ายแล้ว" : ""} · รอบถัดไป ${shortDate(data.dueDate)}`);
+      } else {
+        data.done = true; data.doneAt = todayISO;
+        msg(m, `จ่ายแล้ว${t.autoLog && amount ? " และจดเป็นรายจ่ายแล้ว" : ""}`);
+      }
+    } else { data.done = false; delete data.doneAt; msg(m, "ย้ายกลับไปรายการที่ยังไม่จ่าย (รายจ่ายที่จดไว้แล้วไม่ถูกลบ)"); }
+    await store.update("todos", id, data);
+  } catch(err){ msg(m, "อัปเดตไม่สำเร็จ ลองอีกครั้ง", true); }
+}
+async function payCard(id, undo){
+  const c = state.cards.find(x => x.id === id); if (!c) return;
+  const data = strip(c), cur = todayISO.slice(0,7);
+  if (undo) data.paidMonths = (c.paidMonths || []).filter(x => x !== cur);
+  else { data.paidMonths = [...new Set([...(c.paidMonths || []), cardDue(c).ym])].sort().slice(-24); data.amountDue = 0; }
+  try { await store.update("cards", id, data); msg($("#cdMsg"), undo ? `ยกเลิกสถานะชำระของ ${c.name} แล้ว` : `บันทึกว่าชำระ ${c.name} แล้ว`); }
+  catch(err){ msg($("#cdMsg"), "อัปเดตไม่สำเร็จ ลองอีกครั้ง", true); }
+}
+const ownerOptions = withBoth => ["bill","gym"].concat(withBoth ? ["both"] : []).map(p => `<option value="${p}">${esc(OWNER_LABEL(p))}</option>`).join("");
+$("#tOwner").innerHTML = ownerOptions(true);
+$("#cOwner").innerHTML = ownerOptions(false);
+function syncTdCats(keep){
+  const cats = $("#tOwner").value === "both" ? SH_CATS : CATS.expense;
+  const sel = $("#tCat"), prev = keep || sel.value;
+  sel.innerHTML = cats.map(c => `<option>${esc(c)}</option>`).join("");
+  if (cats.includes(prev)) sel.value = prev;
+}
+function resetTdForm(){
+  state.tdEditingId = null;
+  ["#tTitle","#tAmount","#tDue"].forEach(k => $(k).value = "");
+  $("#tOwner").value = state.me; $("#tRepeat").value = "none"; $("#tAuto").checked = true; syncTdCats();
+  $("#tdSubmit").textContent = "เพิ่มในเช็กลิสต์"; $("#tdFormTitle").textContent = "เพิ่มรายการที่ต้องจ่าย"; $("#tdCancel").hidden = true;
+}
+function resetCdForm(){
+  state.cdEditingId = null;
+  ["#cName","#cDay","#cAmount","#cNote"].forEach(k => $(k).value = "");
+  $("#cOwner").value = state.me;
+  $("#cdSubmit").textContent = "เพิ่มบัตร"; $("#cdFormTitle").textContent = "เพิ่มบัตรเครดิต"; $("#cdCancel").hidden = true;
+}
+$("#tOwner").addEventListener("change", () => syncTdCats());
+$("#tdQuick").innerHTML = TODO_QUICK.map(([t,c,o,r],i) => `<button type="button" data-tq="${i}">${esc(t)}</button>`).join("");
+$("#tdQuick").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const [t,c,o,r] = TODO_QUICK[Number(b.dataset.tq)];
+  $("#tTitle").value = t; $("#tOwner").value = o || state.me; $("#tRepeat").value = r || "none"; syncTdCats(c); $("#tAmount").focus();
+});
+$("#tdCancel").addEventListener("click", () => { resetTdForm(); msg($("#tdMsg"), ""); });
+$("#tdForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#tdMsg"), title = $("#tTitle").value.trim(), amtRaw = $("#tAmount").value.trim(), due = $("#tDue").value;
+  if (!title){ msg(m, "พิมพ์ชื่อรายการที่ต้องจ่ายก่อน", true); $("#tTitle").focus(); return; }
+  const amount = amtRaw ? num(amtRaw) : 0;
+  if (!(amount >= 0)){ msg(m, "จำนวนเงินต้องเป็นตัวเลข", true); $("#tAmount").focus(); return; }
+  if ($("#tRepeat").value === "monthly" && !due){ msg(m, "รายการทุกเดือนต้องมีวันครบกำหนด", true); $("#tDue").focus(); return; }
+  const prev = state.tdEditingId ? state.todos.find(x => x.id === state.tdEditingId) : null;
+  const d = {title, amount: Math.round(amount*100)/100, owner: $("#tOwner").value, repeat: $("#tRepeat").value, category: $("#tCat").value, autoLog: $("#tAuto").checked, done: false, createdAt: prev?.createdAt || Date.now()};
+  if (due){ d.dueDate = due; d.dueDay = Number(due.slice(8)); }
+  if (prev?.example) d.example = true;
+  try {
+    if (prev){ await store.update("todos", prev.id, d); msg(m, "แก้ไขรายการแล้ว"); }
+    else { await store.add("todos", d); msg(m, `เพิ่ม “${title}” ในเช็กลิสต์แล้ว`); }
+    resetTdForm();
+  } catch(err){ msg(m, "บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง", true); }
+});
+$("#todoList").addEventListener("click", async e => {
+  const ck = e.target.closest("[data-tcheck]"), ed = e.target.closest("[data-tedit]"), del = e.target.closest("[data-tdel]");
+  if (ck) return toggleTodo(ck.dataset.tcheck);
+  if (ed){
+    const t = state.todos.find(x => x.id === ed.dataset.tedit); if (!t) return;
+    state.tdEditingId = t.id;
+    $("#tTitle").value = t.title; $("#tAmount").value = Number(t.amount) || ""; $("#tDue").value = t.dueDate || "";
+    $("#tOwner").value = t.owner || "bill"; $("#tRepeat").value = t.repeat || "none"; $("#tAuto").checked = !!t.autoLog; syncTdCats(t.category);
+    $("#tdSubmit").textContent = "บันทึกการแก้ไข"; $("#tdFormTitle").textContent = "แก้ไขรายการ"; $("#tdCancel").hidden = false; msg($("#tdMsg"), "");
+    $("#tdForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#tTitle").focus({preventScroll:true});
+  }
+  if (del){
+    const id = del.dataset.tdel;
+    if (state.pendingDelete !== id){ armDelete(id); return; }
+    state.pendingDelete = null;
+    try { await store.remove("todos", id); } catch(err){ msg($("#tdMsg"), "ลบไม่สำเร็จ ลองอีกครั้ง", true); }
+  }
+});
+$("#todoFilter").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.todoFilter = b.dataset.tf;
+  $$("#todoFilter .chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+  render();
+});
+$("#cdCancel").addEventListener("click", () => { resetCdForm(); msg($("#cdMsg"), ""); });
+$("#cdForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#cdMsg"), name = $("#cName").value.trim(), day = num($("#cDay").value), amtRaw = $("#cAmount").value.trim();
+  if (!name){ msg(m, "ใส่ชื่อบัตรก่อน", true); $("#cName").focus(); return; }
+  if (!(Number.isInteger(day) && day >= 1 && day <= 31)){ msg(m, "วันครบกำหนดต้องเป็นตัวเลข 1–31", true); $("#cDay").focus(); return; }
+  const amount = amtRaw ? num(amtRaw) : 0;
+  if (!(amount >= 0)){ msg(m, "ยอดชำระต้องเป็นตัวเลข", true); $("#cAmount").focus(); return; }
+  const prev = state.cdEditingId ? state.cards.find(x => x.id === state.cdEditingId) : null;
+  const cur = todayISO.slice(0,7), todayD = Number(todayISO.slice(8));
+  const d = {name, dueDay: day, owner: $("#cOwner").value, amountDue: Math.round(amount*100)/100, note: $("#cNote").value.trim(),
+    paidMonths: prev?.paidMonths || [], startYm: prev?.startYm || (day < todayD ? shiftMonth(cur, 1) : cur), createdAt: prev?.createdAt || Date.now()};
+  if (prev?.example) d.example = true;
+  try {
+    if (prev){ await store.update("cards", prev.id, d); msg(m, "แก้ไขบัตรแล้ว"); }
+    else { await store.add("cards", d); msg(m, `เพิ่ม ${name} แล้ว จะเตือนก่อนครบกำหนด 7 วัน`); }
+    resetCdForm();
+  } catch(err){ msg(m, "บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง", true); }
+});
+$("#cardList").addEventListener("click", async e => {
+  const pay = e.target.closest("[data-cpay]"), unpay = e.target.closest("[data-cunpay]"), ed = e.target.closest("[data-cedit]"), del = e.target.closest("[data-cdel]");
+  if (pay) return payCard(pay.dataset.cpay, false);
+  if (unpay) return payCard(unpay.dataset.cunpay, true);
+  if (ed){
+    const c = state.cards.find(x => x.id === ed.dataset.cedit); if (!c) return;
+    state.cdEditingId = c.id;
+    $("#cName").value = c.name; $("#cDay").value = c.dueDay; $("#cOwner").value = c.owner || "bill"; $("#cAmount").value = Number(c.amountDue) || ""; $("#cNote").value = c.note || "";
+    $("#cdSubmit").textContent = "บันทึกการแก้ไข"; $("#cdFormTitle").textContent = "แก้ไขบัตร"; $("#cdCancel").hidden = false; msg($("#cdMsg"), "");
+    $("#cdForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#cName").focus({preventScroll:true});
+  }
+  if (del){
+    const id = del.dataset.cdel;
+    if (state.pendingDelete !== id){ armDelete(id); return; }
+    state.pendingDelete = null;
+    try { await store.remove("cards", id); } catch(err){ msg($("#cdMsg"), "ลบไม่สำเร็จ ลองอีกครั้ง", true); }
+  }
+});
+$("#remindList").addEventListener("click", e => {
+  const b = e.target.closest("[data-rem]"); if (!b) return;
+  if (b.dataset.rem === "card") payCard(b.dataset.id, false); else toggleTodo(b.dataset.id);
+});
+
+/* ---------- people, routing, examples ---------- */
+document.querySelector(".who").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.me = b.dataset.p; lsSet("fannoi-me", state.me);
+  state.day = null; resetForm(); setPayer(state.me); resetTdForm(); resetCdForm(); render();
+});
+function route(){ const v = location.hash.replace("#",""); state.view = ["me","shared","todo","tax"].includes(v) ? v : "me"; render(); }
+window.addEventListener("hashchange", route);
+let clearArmed = false;
+$("#clearExamples").addEventListener("click", async e => {
+  if (!clearArmed){ clearArmed = true; e.target.textContent = "แตะอีกครั้งเพื่อยืนยัน"; setTimeout(()=>{ clearArmed=false; e.target.textContent="ลบรายการตัวอย่างทั้งหมด"; },4000); return; }
+  clearArmed = false;
+  for (const t of state.ledger.filter(t => t.example)){ try { await store.remove("ledger", t.id); } catch(err){} }
+  for (const t of state.shared.filter(t => t.example)){ try { await store.remove("shared", t.id); } catch(err){} }
+  for (const t of state.todos.filter(t => t.example)){ try { await store.remove("todos", t.id); } catch(err){} }
+  for (const t of state.cards.filter(t => t.example)){ try { await store.remove("cards", t.id); } catch(err){} }
+});
+
+setType("expense"); resetForm(); setPayer(state.payer); resetShForm(); resetTdForm(); resetCdForm();
+route();
+init();
+})();
+</script>
+</body>
+</html>
