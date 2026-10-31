@@ -264,6 +264,9 @@ form{display:flex;flex-direction:column;gap:12px}
 .gate-art svg{width:110px}
 .gate h2{font-size:1.4rem;margin-bottom:6px}
 .gate p{margin:0 0 12px}
+.otp{font-size:1.6rem;letter-spacing:.4em;text-align:center;font-weight:700}
+.gate .field input{font-size:16px}
+.gate .field input.otp{font-size:1.6rem}
 body.gated .tabs, body.gated .remind, body.gated #exampleBanner, body.gated .board{display:none!important}
 @media (max-width:560px){ .gate{grid-template-columns:1fr} .gate-art svg{width:80px} }
 /* tax */
@@ -332,13 +335,18 @@ img{max-width:100%}
     <div class="gate-art" id="gateArt" aria-hidden="true"></div>
     <div class="gate-body">
       <h2 id="gateTitle">เข้าสู่ระบบสมุดบัญชี</h2>
-      <p class="muted" id="gateText">ใส่อีเมลที่ได้รับสิทธิ์ ระบบจะส่งลิงก์เข้าสู่ระบบไปที่อีเมลนั้น ไม่ต้องตั้งรหัสผ่าน</p>
+      <p class="muted" id="gateText">ใส่อีเมลที่ได้รับสิทธิ์ ระบบจะส่งรหัสตัวเลขไปที่อีเมล ไม่ต้องตั้งรหัสผ่าน และล็อกอินครั้งเดียวก็ใช้ได้ยาวๆ</p>
       <form id="gateForm" novalidate>
-        <div class="field">
+        <div class="field" id="emailStep">
           <label for="gEmail">อีเมล</label>
-          <input id="gEmail" type="email" autocomplete="email" placeholder="name@example.com">
+          <input id="gEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="name@example.com">
         </div>
-        <div class="cta"><button class="btn" type="submit" id="gateBtn">ส่งลิงก์เข้าสู่ระบบ</button></div>
+        <div class="field" id="codeStep" hidden>
+          <label for="gCode">รหัสจากอีเมล</label>
+          <input id="gCode" class="otp num" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="10" placeholder="••••••">
+          <span class="hint">ส่งรหัสไปที่ <strong id="codeEmail"></strong> แล้ว · <button type="button" class="linkbtn" id="changeEmail">เปลี่ยนอีเมล</button> · <button type="button" class="linkbtn" id="resendCode">ส่งรหัสใหม่</button></span>
+        </div>
+        <div class="cta"><button class="btn" type="submit" id="gateBtn">ส่งรหัสเข้าสู่ระบบ</button></div>
         <p class="msg" id="gateMsg" role="status"></p>
       </form>
     </div>
@@ -1040,16 +1048,50 @@ async function start(session){
   db.doc("settings/main").onSnapshot(s => { if (s.exists){ state.settings = s.data() || {}; render(); } }, () => {});
   db.collection("tax").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); state.taxDocs = m; render(); }, () => {});
 }
+let otpEmail = "", resendAt = 0;
+function gateStep(code){
+  $("#emailStep").hidden = code; $("#codeStep").hidden = !code;
+  $("#gateBtn").textContent = code ? "เข้าสู่ระบบ" : "ส่งรหัสเข้าสู่ระบบ";
+  if (code){ $("#codeEmail").textContent = otpEmail; $("#gCode").value = ""; $("#gCode").focus(); }
+  else $("#gEmail").focus();
+}
+async function sendCode(){
+  const m = $("#gateMsg");
+  if (Date.now() < resendAt){ msg(m, `ขอรหัสใหม่ได้อีกครั้งใน ${Math.ceil((resendAt - Date.now())/1000)} วินาที`, true); return; }
+  $("#gateBtn").disabled = true;
+  const { error } = await sb.auth.signInWithOtp({ email: otpEmail, options: { emailRedirectTo: location.origin + location.pathname } });
+  $("#gateBtn").disabled = false;
+  if (error){ msg(m, /rate|seconds/i.test(error.message) ? "ขอรหัสถี่เกินไป รอสักครู่แล้วลองใหม่" : "ส่งรหัสไม่สำเร็จ: " + error.message, true); return false; }
+  resendAt = Date.now() + 60000;
+  lsSet("fannoi-email", otpEmail);
+  msg(m, "ส่งรหัสแล้ว เปิดอีเมลแล้วพิมพ์ตัวเลขในช่องด้านบน (ถ้าไม่เจอ ดูในโฟลเดอร์ Spam)");
+  return true;
+}
 $("#gateForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const email = $("#gEmail").value.trim(), m = $("#gateMsg");
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg(m, "ใส่อีเมลให้ถูกรูปแบบ", true); $("#gEmail").focus(); return; }
-  $("#gateBtn").disabled = true;
-  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
+  const m = $("#gateMsg");
+  if ($("#codeStep").hidden){
+    const email = $("#gEmail").value.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg(m, "ใส่อีเมลให้ถูกรูปแบบ", true); $("#gEmail").focus(); return; }
+    otpEmail = email;
+    if (await sendCode()) gateStep(true);
+    return;
+  }
+  const token = $("#gCode").value.replace(/\D/g, "");
+  if (token.length < 6){ msg(m, "พิมพ์รหัสตัวเลขจากอีเมลให้ครบ", true); $("#gCode").focus(); return; }
+  $("#gateBtn").disabled = true; msg(m, "กำลังตรวจรหัส…");
+  const { data, error } = await sb.auth.verifyOtp({ email: otpEmail, token, type: "email" });
   $("#gateBtn").disabled = false;
-  if (error) msg(m, "ส่งลิงก์ไม่สำเร็จ: " + error.message, true);
-  else msg(m, `ส่งลิงก์ไปที่ ${email} แล้ว เปิดอีเมลแล้วกดลิงก์บนอุปกรณ์เครื่องนี้`);
+  if (error){ msg(m, /expired|invalid/i.test(error.message) ? "รหัสไม่ถูกต้องหรือหมดอายุ ลองพิมพ์ใหม่ หรือกด “ส่งรหัสใหม่”" : "เข้าสู่ระบบไม่สำเร็จ: " + error.message, true); return; }
+  msg(m, "");
+  if (data && data.session) start(data.session);
 });
+$("#gCode").addEventListener("input", () => {
+  const v = $("#gCode").value.replace(/\D/g, ""); $("#gCode").value = v;
+});
+$("#changeEmail").addEventListener("click", () => { msg($("#gateMsg"), ""); gateStep(false); });
+$("#resendCode").addEventListener("click", () => sendCode());
+{ const saved = lsGet("fannoi-email"); if (saved) $("#gEmail").value = saved; }
 $("#logoutBtn").addEventListener("click", async () => { try { await sb.auth.signOut(); } catch(e){} location.reload(); });
 
 /* ---------- derived ---------- */
