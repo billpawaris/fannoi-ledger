@@ -269,6 +269,62 @@ form{display:flex;flex-direction:column;gap:12px}
 .gate .field input.otp{font-size:1.6rem}
 body.gated .tabs, body.gated .remind, body.gated #exampleBanner, body.gated .board{display:none!important}
 @media (max-width:560px){ .gate{grid-template-columns:1fr} .gate-art svg{width:80px} }
+/* quick add, receipts, budgets, plan */
+.fab{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:0;background:var(--mint);color:var(--surface);font-size:2rem;line-height:1;box-shadow:0 10px 24px -8px rgba(20,149,138,.7);z-index:30;display:grid;place-items:center}
+.fab:hover{filter:brightness(1.06)}
+body.gated .fab{display:none}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,25,25,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--ink);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:18px max(18px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow-y:auto}
+@media (min-width:700px){ .sheet-bg{align-items:center} .sheet{border-radius:22px} }
+.sheet-head{display:flex;justify-content:space-between;align-items:center}
+.sheet-head button{border:0;background:var(--surface-2);border-radius:10px;width:34px;height:34px;font-size:1.1rem}
+.qk-amount{font-size:2.2rem;font-weight:700;text-align:center;width:100%;border:0;border-bottom:2px solid var(--line);background:none;padding:6px 0;color:var(--ink)}
+.qk-amount:focus{outline:none;border-color:var(--mint)}
+.catchips{display:flex;flex-wrap:wrap;gap:6px}
+.catchips button{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:6px 12px;font-size:.85rem}
+.catchips button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.filebtn{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--ink-2)}
+.filebtn label{border:1px dashed var(--enamel-line);border-radius:12px;padding:8px 12px;cursor:pointer;color:var(--ink);background:var(--surface-2)}
+.filebtn label:hover{border-color:var(--mint)}
+.filebtn input{position:absolute;opacity:0;width:1px;height:1px}
+.filebtn button{border:0;background:none;color:var(--gum);font-size:.8rem;padding:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:999px;font-size:.9rem;z-index:50;max-width:calc(100% - 32px);text-align:center}
+.modal-bg{position:fixed;inset:0;background:rgba(10,25,25,.7);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:var(--surface);border-radius:18px;padding:12px;max-width:min(720px,100%);max-height:100%;display:flex;flex-direction:column;gap:8px}
+.modal-box img{max-height:75vh;object-fit:contain;border-radius:10px}
+.modal-box .row-end{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rcpt{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;font-size:.7rem;padding:1px 8px;margin-left:6px;color:var(--ink);vertical-align:middle}
+.budget{display:flex;flex-direction:column;gap:10px}
+.brow{display:grid;grid-template-columns:22px minmax(0,8.5em) minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.85rem}
+.brow svg{width:18px;height:23px}
+.brow .lbl{overflow-wrap:anywhere;line-height:1.3}
+.brow .track{height:12px;border-radius:999px;background:var(--surface-2);overflow:hidden;position:relative}
+.brow .fill{height:100%;display:block;border-radius:999px;background:var(--mint)}
+.brow.warn .fill{background:var(--gold)} .brow.over .fill{background:var(--gum)} .brow.nobudget .fill{background:var(--enamel-line)}
+.brow .v{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.brow .v small{display:block;color:var(--ink-2);font-size:.72rem}
+.budget-sum{font-size:.85rem;color:var(--ink-2);margin:0 0 4px}
+.budget-edit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.plan-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.plan-month{font-size:.78rem;font-weight:700;color:var(--ink-2);margin:14px 0 2px;letter-spacing:.04em}
+.plan-month:first-child{margin-top:0}
+.pitem{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 4px;border-top:1px dashed var(--line)}
+.plan-month+.pitem{border-top:0}
+.pitem .what{min-width:0} .pitem .what strong{display:block;overflow-wrap:anywhere}
+.pitem .what small{display:block;color:var(--ink-2);font-size:.78rem;overflow-wrap:anywhere}
+.pitem .what a{color:var(--mint)}
+.pitem.done .what strong{text-decoration:line-through;color:var(--ink-2)}
+.pitem.done .check{background:var(--mint);border-color:var(--mint)} .pitem.done .check svg{opacity:1}
+.pitem .right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.pitem .right b{white-space:nowrap}
+.pitem .right small{color:var(--ink-2);font-size:.75rem;white-space:nowrap}
+.pill.ok{background:var(--mint-soft);color:var(--ink)}
+#rateForm{flex-direction:row;align-items:center}
+#rateForm input{flex:1 1 120px;height:auto}
+.plan-chart svg{width:100%;height:auto;display:block}
+.plan-chart text{fill:var(--ink-2);font-family:var(--f-body);font-size:11px}
+@media (max-width:560px){ .plan-sum{grid-template-columns:repeat(2,minmax(0,1fr))} .brow{grid-template-columns:20px minmax(0,6.5em) minmax(0,1fr) auto} .budget-edit{grid-template-columns:1fr} }
+
 /* tax */
 .tbl-wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:.88rem}
@@ -289,7 +345,6 @@ tr.total td{font-weight:700;border-bottom:0;border-top:2px solid var(--ink)}
 
 @media (max-width:900px){
   .board{display:flex;flex-direction:column}
-  .col-right{order:-1}
   .top-side{align-items:flex-start;width:100%;flex-direction:row;flex-wrap:wrap}
 }
 @media (max-width:560px){
@@ -355,6 +410,7 @@ img{max-width:100%}
     <a href="#me" data-v="me">บัญชีส่วนตัว</a>
     <a href="#shared" data-v="shared">ใช้จ่ายร่วม บิล × Gym</a>
     <a href="#todo" data-v="todo">เช็กลิสต์ &amp; บัตร<span class="badge" id="todoBadge" hidden></span></a>
+    <a href="#plan" data-v="plan">แผน Residency</a>
     <a href="#tax" data-v="tax">สรุปยื่นภาษี</a>
   </nav>
 
@@ -456,6 +512,11 @@ img{max-width:100%}
               <input id="fNote" placeholder="เช่น ค่าลงทะเบียนประชุม" maxlength="80" autocomplete="off">
             </div>
           </div>
+          <div class="filebtn" id="fReceiptBox">
+            <label for="fReceipt">แนบรูปใบเสร็จ</label>
+            <input id="fReceipt" type="file" accept="image/*">
+            <span id="fReceiptName"></span>
+          </div>
           <div class="quick" id="quick" aria-label="ตัวช่วยกรอกเร็ว"></div>
           <div class="cta">
             <button class="btn" type="submit" id="submitBtn">บันทึกรายการ</button>
@@ -486,10 +547,16 @@ img{max-width:100%}
 
       <section class="panel" aria-labelledby="catTitle">
         <div class="panel-head">
-          <h2 id="catTitle">เงินไปไหนบ้างเดือนนี้</h2>
-          <p>รายจ่ายแยกตามหมวด</p>
+          <h2 id="catTitle">งบรายหมวดเดือนนี้</h2>
+          <button class="linkbtn" type="button" id="editBudget">ตั้งงบ</button>
         </div>
-        <div class="bars" id="bars"></div>
+        <p class="budget-sum" id="budgetSum"></p>
+        <div class="budget" id="bars"></div>
+        <form id="budgetForm" hidden novalidate style="margin-top:14px">
+          <p class="muted small" style="margin:0">งบรายเดือนต่อหมวด (บาท) เว้นว่างไว้ถ้าไม่ต้องการตั้งงบหมวดนั้น</p>
+          <div class="budget-edit" id="budgetFields"></div>
+          <div class="cta"><button class="btn" type="submit">บันทึกงบ</button><button class="btn ghost" type="button" id="budgetCancel">ยกเลิก</button></div>
+        </form>
       </section>
 
       <section class="panel trend" aria-labelledby="trendTitle">
@@ -715,6 +782,88 @@ img{max-width:100%}
     </div>
   </section>
 
+  <!-- ============ RESIDENCY PLAN ============ -->
+  <section id="view-plan" class="board" hidden>
+    <div class="col col-left">
+      <section class="panel" aria-labelledby="planTitle">
+        <div class="panel-head">
+          <h2 id="planTitle">ต้องออมเท่าไรถึงจะทันสมัคร</h2>
+          <p id="planRateNote"></p>
+        </div>
+        <div class="plan-sum" id="planSum"></div>
+        <p class="note-line" id="planVerdict"></p>
+        <div class="plan-chart" id="planChart" style="margin-top:12px"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="planListTitle">
+        <div class="panel-head">
+          <h2 id="planListTitle">ไทม์ไลน์ค่าใช้จ่าย</h2>
+          <p>ติ๊กเมื่อจ่ายแล้ว ระบบจดเป็นรายจ่ายหมวด “สอบ &amp; สมัคร Residency” ให้</p>
+        </div>
+        <div id="planList"></div>
+      </section>
+    </div>
+
+    <div class="col col-right">
+      <section class="panel" aria-labelledby="pFormTitle">
+        <div class="panel-head"><h2 id="pFormTitle">เพิ่มรายการในแผน</h2></div>
+        <form id="pForm" novalidate>
+          <div class="field">
+            <label for="pName">รายการ</label>
+            <input id="pName" placeholder="เช่น ค่าสมัครโปรแกรม Perio" maxlength="80" autocomplete="off">
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="pUsd">ราคาต่อหน่วย (USD)</label>
+              <input id="pUsd" inputmode="decimal" class="num" placeholder="0" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="pQty">จำนวน</label>
+              <input id="pQty" inputmode="numeric" class="num" placeholder="1" autocomplete="off">
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="pDue">ต้องจ่ายภายในเดือน</label>
+              <input id="pDue" type="month">
+            </div>
+            <div class="field">
+              <label for="pNote">หมายเหตุ</label>
+              <input id="pNote" maxlength="160" autocomplete="off">
+            </div>
+          </div>
+          <div class="cta">
+            <button class="btn" type="submit" id="pSubmit">เพิ่มในแผน</button>
+            <button class="btn ghost" type="button" id="pCancel" hidden>ยกเลิก</button>
+          </div>
+          <p class="msg" id="pMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="rateTitle">
+        <div class="panel-head"><h2 id="rateTitle">อัตราแลกเปลี่ยน</h2></div>
+        <form id="rateForm" class="fund-edit" novalidate style="margin-top:0">
+          <input id="pRate" inputmode="decimal" class="num" aria-label="บาทต่อ 1 ดอลลาร์สหรัฐ" placeholder="34.30">
+          <button class="btn" type="submit" style="flex:none">บันทึก</button>
+        </form>
+        <p class="muted small" style="margin:8px 0 0">บาทต่อ 1 ดอลลาร์สหรัฐ ค่าตั้งต้น 34.30 คำนวณจากราคาสอบ TOEFL ที่ IDP Thailand ระบุ (US$215 ≈ 7,380 บาท) ควรปรับตามอัตราวันที่จ่ายจริง</p>
+      </section>
+
+      <section class="panel" aria-labelledby="planRefTitle">
+        <div class="panel-head"><h2 id="planRefTitle">แหล่งอ้างอิงราคา</h2></div>
+        <ul class="refs">
+          <li><a href="https://www.adea.org/PASSapp/Applying" target="_blank" rel="noopener">ADEA PASS: ค่าธรรมเนียมรอบ 2026–27</a></li>
+          <li><a href="https://programs.adea.org/PASS/programs/university-of-pittsburgh-endodontics" target="_blank" rel="noopener">ตัวอย่าง supplemental fee (Pitt Endo)</a></li>
+          <li><a href="https://ielts.idp.com/thailand/english-tests/toefl/toefl-exam-fees" target="_blank" rel="noopener">IDP Thailand: ค่าสอบ TOEFL</a></li>
+          <li><a href="https://help.liaisonedu.com/ADEA_PASS_Applicant_Help_Center/Sending_Your_Official_Transcripts_and_Test_Scores_to_ADEA_PASS/Sending_Official_Dental_School_Transcripts_to_ADEA_PASS/2_Foreign_and_French-Canadian_Transcripts" target="_blank" rel="noopener">ADEA PASS: ผลประเมินวุฒิจากต่างประเทศ</a></li>
+          <li><a href="https://asdfas.ecfmg.org/evsp/applying-fees.html" target="_blank" rel="noopener">ECFMG: ค่าธรรมเนียม J-1 (SEVIS, MRV)</a></li>
+          <li><a href="https://www.ada.org/education/testing/exams/advanced-dental-admission-test-adat" target="_blank" rel="noopener">ADA: ADAT</a></li>
+        </ul>
+        <p class="muted small" style="margin:8px 0 0">ราคาเปลี่ยนได้ทุกรอบการสมัคร ตรวจกับเว็บทางการก่อนจ่ายจริง</p>
+      </section>
+    </div>
+  </section>
+
   <!-- ============ TAX ============ -->
   <section id="view-tax" class="board" hidden>
     <div class="col col-left">
@@ -792,6 +941,39 @@ img{max-width:100%}
     </div>
   </section>
 
+  <button class="fab" type="button" id="fab" aria-label="จดรายการด่วน">+</button>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <div class="sheet-bg" id="qkBg" hidden>
+    <form class="sheet" id="qkForm" role="dialog" aria-modal="true" aria-labelledby="qkTitle" novalidate>
+      <div class="sheet-head"><h2 id="qkTitle">จดด่วน</h2><button type="button" id="qkClose" aria-label="ปิด">✕</button></div>
+      <div class="seg" role="group" aria-label="ประเภท" id="qkSeg">
+        <button type="button" data-q="expense" aria-pressed="true">รายจ่าย</button>
+        <button type="button" data-q="income" aria-pressed="false">รายรับ</button>
+        <button type="button" data-q="shared" aria-pressed="false">จ่ายร่วม</button>
+      </div>
+      <input id="qkAmount" class="qk-amount num" inputmode="decimal" placeholder="฿0" aria-label="จำนวนเงิน" autocomplete="off">
+      <div class="catchips" id="qkCats" role="group" aria-label="หมวด"></div>
+      <div class="field"><label for="qkNote">บันทึกสั้นๆ (ไม่บังคับ)</label><input id="qkNote" maxlength="80" autocomplete="off"></div>
+      <div class="filebtn" id="qkReceiptBox">
+        <label for="qkReceipt">ถ่ายหรือแนบใบเสร็จ</label>
+        <input id="qkReceipt" type="file" accept="image/*" capture="environment">
+        <span id="qkReceiptName"></span>
+      </div>
+      <div class="cta"><button class="btn" type="submit" id="qkSave">บันทึก</button></div>
+      <button type="button" class="linkbtn" id="qkMore" style="align-self:center">กรอกแบบละเอียด</button>
+      <p class="msg" id="qkMsg" role="status"></p>
+    </form>
+  </div>
+
+  <div class="modal-bg" id="rcptBg" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-label="รูปใบเสร็จ">
+      <div class="row-end"><strong>ใบเสร็จ</strong><button type="button" class="btn ghost" id="rcptClose" style="padding:6px 12px">ปิด</button></div>
+      <img id="rcptImg" alt="รูปใบเสร็จ">
+      <p class="msg" id="rcptMsg"></p>
+    </div>
+  </div>
+
   <p class="foot" id="foot">ข้อมูลเก็บใน Supabase ของคุณ เห็นได้เฉพาะอีเมลที่อยู่ในรายชื่อสมาชิก</p>
 </div>
 
@@ -861,6 +1043,7 @@ const lsSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
 const state = {
   ledger: [], shared: [], todos: [], cards: [], settings: {}, taxDocs: {}, mode: "loading",
   todoFilter: "mine", tdEditingId: null, cdEditingId: null,
+  plan: [], pEditingId: null, fReceipt: null, qk: {mode: "expense", cat: null, file: null}, editingBudget: false,
   me: lsGet("fannoi-me") === "gym" ? "gym" : "bill",
   view: "me", month: todayISO.slice(0,7), year: now.getFullYear(), day: null, filter: "all",
   type: "expense", editingId: null, pendingDelete: null,
@@ -915,10 +1098,10 @@ let db = null, downloads = null;
 function loadLocal(){
   try {
     const r = JSON.parse(lsGet(LS_KEY) || lsGet("fannoi-ledger-v1") || "null");
-    if (r){ state.ledger = r.ledger || r.tx || []; state.shared = r.shared || []; state.todos = r.todos || []; state.cards = r.cards || []; state.settings = r.settings || {}; state.taxDocs = r.taxDocs || {}; }
+    if (r){ state.ledger = r.ledger || r.tx || []; state.shared = r.shared || []; state.todos = r.todos || []; state.cards = r.cards || []; state.plan = r.plan || []; state.settings = r.settings || {}; state.taxDocs = r.taxDocs || {}; }
   } catch(e){}
 }
-function saveLocal(){ lsSet(LS_KEY, JSON.stringify({ledger:state.ledger, shared:state.shared, todos:state.todos, cards:state.cards, settings:state.settings, taxDocs:state.taxDocs})); }
+function saveLocal(){ lsSet(LS_KEY, JSON.stringify({ledger:state.ledger, shared:state.shared, todos:state.todos, cards:state.cards, plan:state.plan, settings:state.settings, taxDocs:state.taxDocs})); }
 function goLocal(){ if (state.mode === "local") return; state.mode = "local"; db = null; loadLocal(); render(); }
 const store = {
   async add(coll, t){
@@ -933,7 +1116,8 @@ const store = {
     if (state.mode === "cloud") { await db.doc(coll+"/"+id).delete(); return; }
     state[coll] = state[coll].filter(x=>x.id!==id); saveLocal(); render();
   },
-  async settings(s){
+  async settings(patch){
+    const s = {...state.settings, ...patch};
     if (state.mode === "cloud") { await db.doc("settings/main").set(s); return; }
     state.settings = s; saveLocal(); render();
   },
@@ -1044,6 +1228,7 @@ async function start(session){
   live("shared","shared");
   live("todos","todos");
   live("cards","cards");
+  live("plan","plan");
   db.doc("settings/main").onSnapshot(s => { if (s.exists){ state.settings = s.data() || {}; render(); } }, () => {});
   db.collection("tax").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); state.taxDocs = m; render(); }, () => {});
 }
@@ -1093,7 +1278,8 @@ function render(){
   $$('[data-name]').forEach(s => s.textContent = pname(s.dataset.name));
   $$(".who button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === state.me)));
   $$(".tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.v === state.view ? "page" : "false"));
-  ["me","shared","todo","tax"].forEach(v => $("#view-"+v).hidden = v !== state.view);
+  ["me","shared","todo","plan","tax"].forEach(v => $("#view-"+v).hidden = v !== state.view);
+  $("#fab").hidden = state.view === "tax" || state.mode === "signedout";
   $$("[data-monthname]").forEach(s => s.textContent = monthLabel(state.month));
 
   const st = $("#status");
@@ -1105,7 +1291,7 @@ function render(){
   $("#exampleBanner").hidden = ![state.ledger, state.shared, state.todos, state.cards].some(l => l.some(t => t.example));
   $("#eyebrow").textContent = state.view === "shared" ? "ค่าใช้จ่ายร่วม บิล × Gym" : state.view === "todo" ? `เช็กลิสต์ของ${pname(state.me)}` : `บัญชีของ${pname(state.me)}`;
 
-  renderMe(); renderShared(); renderTodo(); renderTax(); renderReminders();
+  renderMe(); renderShared(); renderTodo(); renderPlan(); renderTax(); renderReminders();
 }
 function setHeader(mood, speech, who){ $("#mascot").innerHTML = mascotSVG(mood, who); $("#speech").textContent = speech; }
 
@@ -1120,6 +1306,7 @@ function renderMe(){
     else if (!mt.length) speech = `${pname(state.me)}ยังไม่มีรายการใน${monthLabel(state.month)} ลองจดรายการแรกได้เลย`;
     else if (T.income === 0 && T.expense > 0){ mood="worried"; speech = `เดือนนี้ยังไม่มีรายรับ แต่จ่ายไปแล้ว ${fmt(T.expense)}`; }
     else if (T.net < 0){ mood="sad"; speech = `ฟันผุแล้ว! รายจ่ายและเงินออมเกินรายรับอยู่ ${fmt(-T.net)}`; }
+    else if (budgetStatus(mt).over.length){ const o = budgetStatus(mt).over[0]; mood="sad"; speech = `งบ${o.cat}เกินแล้ว ${fmt(o.spent - o.budget)} ลองชะลอหมวดนี้จนสิ้นเดือน`; }
     else {
       const keep = T.income ? (T.income - T.expense) / T.income : 0;
       const top = topCategory(mt);
@@ -1195,7 +1382,7 @@ function renderList(mt){
     return `<li class="row ${t.type}">
       <span class="ic">${miniTooth(colors[t.type], t.type==="expense")}</span>
       <span class="what"><strong>${esc(t.note || t.category)}${t.example?'<span class="tag">ตัวอย่าง</span>':""}</strong>
-        <small>${esc(shortDate(t.date))} · ${esc(t.category)} ${taxTag}</small></span>
+        <small>${esc(shortDate(t.date))} · ${esc(t.category)} ${taxTag}${t.receipt ? `<button type="button" class="rcpt" data-receipt="${esc(t.receipt)}">ใบเสร็จ</button>` : ""}</small></span>
       <span><span class="amt num">${sign}${fmt(t.amount)}</span>
         <span class="acts"><button type="button" data-edit="${esc(t.id)}">แก้ไข</button>
         <button type="button" class="${confirming?"danger":""}" data-del="${esc(t.id)}">${confirming?"ยืนยันลบ":"ลบ"}</button></span></span>
@@ -1215,12 +1402,37 @@ function renderFund(){
   $("#shade").innerHTML = VITA.map(([n,c],i) => `<div class="tab ${i<on?"on":""}" style="${i<on?`background:${c}`:""}" title="${n}"><small>${n}</small></div>`).join("");
   $("#shade").setAttribute("aria-label", `ออมแล้ว ${Math.round(pct*100)}% ของเป้าหมาย`);
 }
+const budgetsOf = p => ((state.settings.budgets || {})[p]) || {};
+function budgetStatus(mt){
+  const spent = {}; mt.filter(t => t.type === "expense").forEach(t => spent[t.category] = (spent[t.category]||0) + Number(t.amount));
+  const b = budgetsOf(state.me);
+  const rows = CATS.expense.filter(c => b[c] || spent[c]).map(c => ({cat: c, spent: spent[c] || 0, budget: Number(b[c]) || 0}));
+  rows.forEach(r => r.ratio = r.budget ? r.spent / r.budget : null);
+  return {rows, over: rows.filter(r => r.budget && r.spent > r.budget).sort((x,y) => (y.spent-y.budget)-(x.spent-x.budget))};
+}
 function renderBars(mt){
-  const m = {}; mt.filter(t=>t.type==="expense").forEach(t => m[t.category]=(m[t.category]||0)+Number(t.amount));
-  const rows = Object.entries(m).sort((a,b)=>b[1]-a[1]);
-  if (!rows.length){ $("#bars").innerHTML = `<p class="muted" style="margin:0">ยังไม่มีรายจ่ายใน${esc(monthLabel(state.month))}</p>`; return; }
-  const max = rows[0][1];
-  $("#bars").innerHTML = rows.map(([k,v]) => `<div class="bar"><span class="lbl">${esc(k)}</span><span class="track"><span class="fill" style="width:${(v/max*100).toFixed(1)}%"></span></span><span class="v num">${fmt(v)}</span></div>`).join("");
+  const {rows} = budgetStatus(mt);
+  const box = $("#bars");
+  const totalB = rows.reduce((a,r) => a + r.budget, 0), totalS = rows.filter(r => r.budget).reduce((a,r) => a + r.spent, 0);
+  $("#budgetSum").textContent = totalB ? `ใช้ไป ${fmt(totalS)} จากงบรวม ${fmt(totalB)} (${Math.round(totalS/totalB*100)}%)` : "ยังไม่ได้ตั้งงบ กด “ตั้งงบ” เพื่อกำหนดงบรายเดือนของแต่ละหมวด";
+  if (!rows.length){ box.innerHTML = `<p class="muted" style="margin:0">ยังไม่มีรายจ่ายใน${esc(monthLabel(state.month))}</p>`; }
+  else {
+    const maxNo = Math.max(1, ...rows.filter(r => !r.budget).map(r => r.spent));
+    rows.sort((x,y) => (y.ratio ?? -1) - (x.ratio ?? -1) || y.spent - x.spent);
+    box.innerHTML = rows.map(r => {
+      const cls = !r.budget ? "nobudget" : r.ratio > 1 ? "over" : r.ratio >= .8 ? "warn" : "";
+      const w = r.budget ? Math.min(100, r.ratio*100) : r.spent/maxNo*100;
+      const color = cls === "over" ? "var(--gum)" : cls === "warn" ? "var(--gold)" : cls === "nobudget" ? "var(--enamel-line)" : "var(--mint)";
+      const sub = !r.budget ? "ไม่ได้ตั้งงบ" : r.ratio > 1 ? `เกิน ${fmt(r.spent - r.budget)}` : `เหลือ ${fmt(r.budget - r.spent)}`;
+      return `<div class="brow ${cls}">${miniTooth(color, cls === "over")}<span class="lbl">${esc(r.cat)}</span><span class="track"><span class="fill" style="width:${w.toFixed(1)}%"></span></span><span class="v">${fmt(r.spent)}${r.budget ? ` / ${fmt(r.budget)}` : ""}<small>${esc(sub)}</small></span></div>`;
+    }).join("");
+  }
+  if (!state.editingBudget || !$("#budgetForm").contains(document.activeElement)){
+    const b = budgetsOf(state.me);
+    $("#budgetFields").innerHTML = CATS.expense.map((c,i) => `<div class="field"><label for="bg-${i}">${esc(c)}</label><input id="bg-${i}" data-bcat="${esc(c)}" inputmode="numeric" class="num" placeholder="ไม่ตั้งงบ" value="${b[c] ? esc(b[c]) : ""}"></div>`).join("");
+  }
+  $("#budgetForm").hidden = !state.editingBudget;
+  $("#editBudget").textContent = state.editingBudget ? "ปิด" : "ตั้งงบ";
 }
 function renderTrend(){
   const months = []; for (let i=5;i>=0;i--) months.push(shiftMonth(state.month,-i));
@@ -1474,6 +1686,7 @@ function resetForm(){
   $("#fAmount").value = ""; $("#fNote").value = ""; $("#fWht").value = "";
   $("#fDate").value = state.month === todayISO.slice(0,7) ? todayISO : state.month + "-01";
   $("#fTax").value = TAX_DEFAULT[$("#fCat").value] || "40(8)";
+  state.fReceipt = null; $("#fReceipt").value = ""; $("#fReceiptName").textContent = "";
   $("#submitBtn").textContent = "บันทึกรายการ";
   $("#formTitle").textContent = "จดรายการใหม่";
   $("#cancelEdit").hidden = true;
@@ -1493,7 +1706,9 @@ $("#txForm").addEventListener("submit", async e => {
   const t = { owner: prev ? ownerOf(prev) : state.me, type: state.type, amount: Math.round(amount*100)/100, category: $("#fCat").value, note: $("#fNote").value.trim(), date, createdAt: prev?.createdAt || Date.now() };
   if (state.type === "income"){ t.taxType = $("#fTax").value; t.wht = Math.round(wht*100)/100; }
   if (prev?.example) t.example = true;
+  if (prev?.receipt) t.receipt = prev.receipt;
   try {
+    if (state.fReceipt){ msg(m, "กำลังอัปโหลดใบเสร็จ…"); t.receipt = await files.upload(state.fReceipt); if (prev?.receipt) files.remove(prev.receipt); }
     if (state.editingId) { await store.update("ledger", state.editingId, t); msg(m, "แก้ไขรายการแล้ว"); }
     else { await store.add("ledger", t); msg(m, `บันทึก${TYPE_LABEL[t.type]} ${fmt(t.amount)} แล้ว`); }
     if (date.slice(0,7) !== state.month){ state.month = date.slice(0,7); state.day = null; render(); }
@@ -1522,7 +1737,8 @@ $("#list").addEventListener("click", async e => {
     const id = del.dataset.del;
     if (state.pendingDelete !== id){ armDelete(id); return; }
     state.pendingDelete = null;
-    try { await store.remove("ledger", id); } catch(err){ msg($("#formMsg"), "ลบไม่สำเร็จ ลองอีกครั้ง", true); }
+    const rc = (state.ledger.find(x => x.id === id) || {}).receipt;
+    try { await store.remove("ledger", id); if (rc) files.remove(rc); } catch(err){ msg($("#formMsg"), "ลบไม่สำเร็จ ลองอีกครั้ง", true); }
   }
 });
 document.querySelector(".filters").addEventListener("click", e => {
@@ -1852,13 +2068,307 @@ $("#remindList").addEventListener("click", e => {
   if (b.dataset.rem === "card") payCard(b.dataset.id, false); else toggleTodo(b.dataset.id);
 });
 
+/* ---------- receipts ---------- */
+const files = {
+  ok: () => state.mode === "cloud" && !!sb,
+  async upload(file){
+    if (!files.ok()) throw new Error("offline");
+    const blob = await shrink(file);
+    const path = `${state.me}/${new Date().toISOString().slice(0,7)}/${Date.now().toString(36)}${Math.random().toString(36).slice(2,7)}.jpg`;
+    const { error } = await sb.storage.from("receipts").upload(path, blob, {contentType: "image/jpeg", upsert: false});
+    if (error) throw error;
+    return path;
+  },
+  async url(path){ const { data, error } = await sb.storage.from("receipts").createSignedUrl(path, 3600); if (error) throw error; return data.signedUrl; },
+  async remove(path){ try { await sb.storage.from("receipts").remove([path]); } catch(e){} }
+};
+async function shrink(file){
+  const src = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth*k); c.height = Math.round(img.naturalHeight*k);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return await new Promise(res => c.toBlob(res, "image/jpeg", 0.78));
+  } finally { URL.revokeObjectURL(src); }
+}
+function bindReceipt(inputSel, nameSel, set){
+  $(inputSel).addEventListener("change", () => {
+    const f = $(inputSel).files[0];
+    if (f && !files.ok()){ $(nameSel).textContent = "แนบใบเสร็จได้เมื่อเข้าสู่ระบบและซิงก์ออนไลน์"; $(inputSel).value = ""; set(null); return; }
+    set(f || null);
+    $(nameSel).innerHTML = f ? `แนบแล้ว: ${esc(f.name.slice(0,30))} <button type="button" data-clear="1">เอาออก</button>` : "";
+  });
+  $(nameSel).addEventListener("click", e => { if (e.target.dataset.clear){ $(inputSel).value = ""; set(null); $(nameSel).textContent = ""; } });
+}
+bindReceipt("#fReceipt", "#fReceiptName", f => state.fReceipt = f);
+bindReceipt("#qkReceipt", "#qkReceiptName", f => state.qk.file = f);
+async function openReceipt(path){
+  $("#rcptBg").hidden = false; $("#rcptImg").removeAttribute("src"); msg($("#rcptMsg"), "กำลังโหลดรูป…");
+  try { $("#rcptImg").src = await files.url(path); msg($("#rcptMsg"), ""); }
+  catch(e){ msg($("#rcptMsg"), "เปิดรูปไม่ได้ ตรวจว่าเข้าสู่ระบบอยู่และตั้งค่าที่เก็บใบเสร็จใน Supabase แล้ว", true); }
+  $("#rcptClose").focus();
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-receipt]"); if (b) openReceipt(b.dataset.receipt); });
+$("#rcptClose").addEventListener("click", () => $("#rcptBg").hidden = true);
+$("#rcptBg").addEventListener("click", e => { if (e.target.id === "rcptBg") $("#rcptBg").hidden = true; });
+
+/* ---------- quick add ---------- */
+let toastTimer;
+function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 2600); }
+function qkCats(){
+  const mode = state.qk.mode;
+  if (mode === "shared") return SH_CATS;
+  const list = CATS[mode];
+  const since = shiftMonth(todayISO.slice(0,7), -2);
+  const freq = {}; myLedger().filter(t => t.type === mode && (t.date||"") >= since).forEach(t => freq[t.category] = (freq[t.category]||0) + 1);
+  return list.slice().sort((a,b) => (freq[b]||0) - (freq[a]||0));
+}
+function renderQk(){
+  $$("#qkSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.q === state.qk.mode)));
+  const cats = qkCats();
+  if (!cats.includes(state.qk.cat)) state.qk.cat = cats[0];
+  $("#qkCats").innerHTML = cats.map(c => `<button type="button" data-qc="${esc(c)}" aria-pressed="${c === state.qk.cat}">${esc(c)}</button>`).join("");
+  $("#qkSave").textContent = state.qk.mode === "shared" ? `บันทึก (${pname(state.me)}จ่าย หารครึ่ง)` : "บันทึก";
+}
+function openQk(){
+  state.qk = {mode: state.view === "shared" ? "shared" : "expense", cat: null, file: null};
+  $("#qkAmount").value = ""; $("#qkNote").value = ""; $("#qkReceipt").value = ""; $("#qkReceiptName").textContent = ""; msg($("#qkMsg"), "");
+  renderQk(); $("#qkBg").hidden = false; $("#qkAmount").focus();
+}
+function closeQk(){ $("#qkBg").hidden = true; $("#fab").focus(); }
+const mealNow = () => { const h = new Date().getHours(); return h < 10 ? "มื้อเช้า" : h < 15 ? "มื้อกลางวัน" : h < 17 ? "ของว่าง/คาเฟ่" : "มื้อเย็น"; };
+$("#fab").addEventListener("click", openQk);
+$("#qkClose").addEventListener("click", closeQk);
+$("#qkBg").addEventListener("click", e => { if (e.target.id === "qkBg") closeQk(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape"){ if (!$("#rcptBg").hidden) $("#rcptBg").hidden = true; else if (!$("#qkBg").hidden) closeQk(); } });
+$("#qkSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b){ state.qk.mode = b.dataset.q; state.qk.cat = null; renderQk(); } });
+$("#qkCats").addEventListener("click", e => { const b = e.target.closest("button"); if (b){ state.qk.cat = b.dataset.qc; renderQk(); } });
+$("#qkForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#qkMsg"), amount = num($("#qkAmount").value), note = $("#qkNote").value.trim(), q = state.qk;
+  if (!amount || amount <= 0){ msg(m, "ใส่จำนวนเงินก่อน", true); $("#qkAmount").focus(); return; }
+  $("#qkSave").disabled = true;
+  try {
+    let receipt;
+    if (q.file){ msg(m, "กำลังอัปโหลดใบเสร็จ…"); receipt = await files.upload(q.file); }
+    const base = {amount: Math.round(amount*100)/100, category: q.cat, note, date: todayISO, createdAt: Date.now()};
+    if (receipt) base.receipt = receipt;
+    if (q.mode === "shared"){
+      const d = {...base, kind: "expense", paidBy: state.me, billPct: 50, split: "half"};
+      if (q.cat === "อาหาร") d.meal = mealNow();
+      await store.add("shared", d);
+    } else {
+      const t = {...base, owner: state.me, type: q.mode};
+      if (q.mode === "income"){ t.taxType = TAX_DEFAULT[q.cat] || "40(8)"; t.wht = 0; }
+      await store.add("ledger", t);
+    }
+    closeQk();
+    toast(`บันทึก${q.mode === "income" ? "รายรับ" : q.mode === "shared" ? "ค่าใช้จ่ายร่วม" : "รายจ่าย"} ${fmt(amount)} · ${q.cat}`);
+  } catch(err){ msg(m, "บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง", true); }
+  $("#qkSave").disabled = false;
+});
+$("#qkMore").addEventListener("click", () => {
+  const q = state.qk, amt = $("#qkAmount").value, note = $("#qkNote").value;
+  closeQk();
+  if (q.mode === "shared"){
+    location.hash = "shared"; setPayer(state.me); $("#sAmount").value = amt; $("#sCat").value = q.cat; $("#sNote").value = note; syncShFields();
+    setTimeout(() => { $("#shForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#sAmount").focus({preventScroll:true}); }, 50);
+  } else {
+    location.hash = "me"; setType(q.mode, q.cat); $("#fAmount").value = amt; $("#fNote").value = note;
+    if (q.file){ state.fReceipt = q.file; $("#fReceiptName").textContent = "แนบแล้ว: " + q.file.name.slice(0,30); }
+    setTimeout(() => { $("#txForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#fAmount").focus({preventScroll:true}); }, 50);
+  }
+});
+
+/* ---------- budgets ---------- */
+$("#editBudget").addEventListener("click", () => { state.editingBudget = !state.editingBudget; render(); if (state.editingBudget) $("#budgetFields input").focus(); });
+$("#budgetCancel").addEventListener("click", () => { state.editingBudget = false; render(); });
+$("#budgetForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = {};
+  for (const inp of $$("#budgetFields input")){
+    const raw = inp.value.trim(); if (!raw) continue;
+    const v = num(raw); if (!(v > 0)){ inp.focus(); toast("งบต้องเป็นตัวเลขมากกว่า 0"); return; }
+    b[inp.dataset.bcat] = Math.round(v);
+  }
+  const budgets = {...(state.settings.budgets || {}), [state.me]: b};
+  try { document.activeElement.blur(); await store.settings({budgets}); state.editingBudget = false; render(); toast("บันทึกงบแล้ว"); }
+  catch(err){ toast("บันทึกงบไม่สำเร็จ ลองอีกครั้ง"); }
+});
+
+/* ---------- residency plan ---------- */
+const PLAN_TEMPLATE = [
+  {name:"สอบ TOEFL iBT", usd:215, qty:1, due:"2027-03", note:"ราคาสมัครสอบในไทยตาม IDP Thailand ยังไม่รวมภาษี", src:"https://ielts.idp.com/thailand/english-tests/toefl/toefl-exam-fees"},
+  {name:"ประเมินวุฒิแบบ course-by-course (ECE หรือ WES)", usd:0, qty:1, due:"2027-04", note:"ADEA PASS ให้ผู้จบจากต่างประเทศส่งผลประเมินแบบ course-by-course ใส่ราคาจากเว็บ ECE/WES", src:"https://help.liaisonedu.com/ADEA_PASS_Applicant_Help_Center/Sending_Your_Official_Transcripts_and_Test_Scores_to_ADEA_PASS/Sending_Official_Dental_School_Transcripts_to_ADEA_PASS/2_Foreign_and_French-Canadian_Transcripts"},
+  {name:"สอบ ADAT (ถ้าโปรแกรมที่เลือกกำหนด)", usd:0, qty:1, due:"2027-05", note:"ยังยืนยันค่าสอบจาก ADA ไม่ได้ ใส่ราคาจากเว็บ ADA", src:"https://www.ada.org/education/testing/exams/advanced-dental-admission-test-adat"},
+  {name:"ADEA PASS โปรแกรมแรก", usd:199, qty:1, due:"2027-06", note:"ค่าธรรมเนียมรอบ 2026–27 รอบถัดไปอาจเปลี่ยน", src:"https://www.adea.org/PASSapp/Applying"},
+  {name:"ADEA PASS โปรแกรมเพิ่มเติม", usd:92, qty:9, due:"2027-06", note:"โปรแกรมละ $92 (รอบ 2026–27) แก้จำนวนตามที่จะสมัครจริง", src:"https://www.adea.org/PASSapp/Applying"},
+  {name:"ค่าสมัครเพิ่มของแต่ละโปรแกรม (supplemental fee)", usd:75, qty:10, due:"2027-07", note:"ตัวอย่าง Pitt Endo $75 แต่ละโปรแกรมไม่เท่ากัน", src:"https://programs.adea.org/PASS/programs/university-of-pittsburgh-endodontics"},
+  {name:"ค่าเดินทางไปสัมภาษณ์", usd:0, qty:1, due:"2027-10", note:"ตั๋วเครื่องบินและที่พัก หลายโปรแกรมสัมภาษณ์ออนไลน์", src:""},
+  {name:"ค่าธรรมเนียม SEVIS I-901 (J-1)", usd:220, qty:1, due:"2028-04", note:"อัตราสำหรับ J-1 ส่วนใหญ่", src:"https://asdfas.ecfmg.org/evsp/applying-fees.html"},
+  {name:"ค่าธรรมเนียมยื่นวีซ่า (MRV)", usd:185, qty:1, due:"2028-04", note:"มีรายงานว่าอาจปรับขึ้นเป็น $213 ตรวจที่ travel.state.gov ก่อนจ่าย", src:"https://asdfas.ecfmg.org/evsp/applying-fees.html"},
+  {name:"เงินแสดงฐานะการเงิน / ค่าใช้จ่ายเดือนแรก", usd:0, qty:1, due:"2028-05", note:"แต่ละโปรแกรมกำหนดยอดเอง ดูเอกสาร DS-2019 หรือ I-20 ของโปรแกรม", src:""}
+];
+const DEFAULT_RATE = 34.3;
+const planRate = () => Number(((state.settings.plan || {})[state.me] || {}).rate) || DEFAULT_RATE;
+const myPlan = () => state.plan.filter(x => (x.owner || "bill") === state.me);
+const monthsUntil = ym => { const [y,m] = ym.split("-").map(Number), [cy,cm] = todayISO.slice(0,7).split("-").map(Number); return (y*12+m) - (cy*12+cm); };
+const ymLabel = ym => { const [y,m] = ym.split("-").map(Number); return new Date(y,m-1,1).toLocaleDateString("th-TH",{month:"long",year:"numeric"}); };
+function planCalc(){
+  const rate = planRate();
+  const items = myPlan().map(x => ({...x, thb: (Number(x.usd)||0) * (Number(x.qty)||1) * rate})).sort((a,b) => (a.due||"").localeCompare(b.due||"") || (a.order||0)-(b.order||0));
+  const fund = myLedger().filter(t => t.type === "saving" && t.category === "กองทุน Residency").reduce((a,t) => a + Number(t.amount), 0);
+  const cur = todayISO.slice(0,7);
+  const last3 = [0,1,2].map(i => shiftMonth(cur, -i));
+  const avg = myLedger().filter(t => t.type === "saving" && t.category === "กองทุน Residency" && last3.includes((t.date||"").slice(0,7))).reduce((a,t) => a + Number(t.amount), 0) / 3;
+  let cum = 0, need = 0;
+  const unpaid = items.filter(x => !x.paid);
+  unpaid.forEach(x => {
+    cum += x.thb; x.cum = cum;
+    const mths = Math.max(1, monthsUntil(x.due));
+    x.months = mths;
+    need = Math.max(need, (cum - fund) / mths);
+    x.ok = fund + avg * mths >= cum;
+  });
+  const total = items.reduce((a,x) => a + x.thb, 0), paid = items.filter(x => x.paid).reduce((a,x) => a + x.thb, 0);
+  const missing = items.filter(x => !x.paid && !(Number(x.usd) > 0)).length;
+  return {rate, items, unpaid, fund, avg, need: Math.max(0, need), total, paid, remaining: cum, missing};
+}
+function renderPlan(){
+  const P = planCalc();
+  if (state.view === "plan"){
+    const sp = state.mode === "loading" ? "กำลังเปิดสมุดบัญชี…" : !P.items.length ? "ยังไม่มีแผน กด “ใช้รายการแนะนำ” เพื่อเริ่มจากค่าใช้จ่ายจริงของการสมัคร Residency" : P.remaining <= P.fund ? "เงินกองทุนพอสำหรับทุกรายการที่เหลือแล้ว เยี่ยมมาก!" : P.avg >= P.need ? `ออมเฉลี่ยเดือนละ ${fmt(P.avg)} ทันทุกเส้นตาย` : `ต้องออมเพิ่มเป็นเดือนละ ${fmt(P.need)} ถึงจะทันทุกรายการ`;
+    setHeader(!P.items.length ? "neutral" : (P.avg >= P.need || P.remaining <= P.fund) ? "happy" : "worried", sp, state.me);
+  }
+  $("#planRateNote").textContent = `1 USD = ${P.rate.toFixed(2)} บาท`;
+  if (!$("#rateForm").contains(document.activeElement)) $("#pRate").value = P.rate.toFixed(2);
+  $("#planSum").innerHTML = `
+    <div class="stat out"><span>ค่าใช้จ่ายทั้งแผน</span><b class="num">${fmt(P.total)}</b></div>
+    <div class="stat save"><span>กองทุน Residency ตอนนี้</span><b class="num">${fmt(P.fund)}</b></div>
+    <div class="stat in"><span>ออมเฉลี่ย 3 เดือน</span><b class="num">${fmt(P.avg)}</b></div>
+    <div class="stat net"><span>ต้องออมเดือนละ</span><b class="num">${fmt(Math.ceil(P.need/100)*100)}</b></div>`;
+  $("#planVerdict").textContent = !P.items.length ? "" :
+    `จ่ายไปแล้ว ${fmt(P.paid)} · เหลือ ${fmt(P.remaining)}${P.missing ? ` · มี ${P.missing} รายการที่ยังไม่ใส่ราคา ตัวเลขจริงจะสูงกว่านี้` : ""}. ยอด “ต้องออมเดือนละ” คิดจากเส้นตายที่ตึงที่สุด โดยนับเงินในกองทุนตอนนี้แล้ว`;
+  renderPlanChart(P);
+  const list = $("#planList");
+  if (!P.items.length){
+    list.innerHTML = `<div class="empty">${mascotSVG("neutral", state.me)}<span>ยังไม่มีรายการ เริ่มจากรายการแนะนำ 10 รายการ (TOEFL, ADEA PASS, วีซ่า J-1 ฯลฯ) แล้วแก้ราคาและเดือนให้ตรงแผนจริง<br><button class="btn" type="button" id="planTemplate" style="margin-top:10px;flex:none">ใช้รายการแนะนำ</button></span></div>`;
+    return;
+  }
+  let lastM = "";
+  list.innerHTML = P.items.map(x => {
+    const head = x.due !== lastM ? `<p class="plan-month">${esc(ymLabel(x.due))}</p>` : ""; lastM = x.due;
+    const confirming = state.pendingDelete === x.id;
+    const pill = x.paid ? '<span class="pill done">จ่ายแล้ว</span>' : !(Number(x.usd) > 0) ? '<span class="pill later">ยังไม่ใส่ราคา</span>' : x.ok ? '<span class="pill ok">ออมทัน</span>' : '<span class="pill urgent">ต้องเร่งออม</span>';
+    return head + `<div class="pitem ${x.paid ? "done" : ""}">
+      <button type="button" class="check" data-ppaid="${esc(x.id)}" aria-pressed="${x.paid ? "true" : "false"}" aria-label="${x.paid ? "ยกเลิกจ่ายแล้ว" : "ทำเครื่องหมายจ่ายแล้ว"}: ${esc(x.name)}">${CHECK}</button>
+      <span class="what"><strong>${esc(x.name)}</strong>
+        <small>${Number(x.qty) > 1 ? `${esc(x.qty)} × ` : ""}$${Number(x.usd||0).toLocaleString("en-US")}${x.note ? " · " + esc(x.note) : ""}${x.src ? ` · <a href="${esc(x.src)}" target="_blank" rel="noopener">ที่มา</a>` : ""}</small>
+        <span class="acts-line" style="justify-content:flex-start">${x.paid ? "" : `<button type="button" data-ptodo="${esc(x.id)}">เพิ่มในเช็กลิสต์</button>`}<button type="button" data-pedit="${esc(x.id)}">แก้ไข</button><button type="button" class="${confirming ? "danger" : ""}" data-pdel="${esc(x.id)}">${confirming ? "ยืนยันลบ" : "ลบ"}</button></span></span>
+      <span class="right"><b class="num">${fmt(x.thb)}</b><small class="num">$${(Number(x.usd||0)*(Number(x.qty)||1)).toLocaleString("en-US")}</small>${pill}</span>
+    </div>`;
+  }).join("");
+}
+function renderPlanChart(P){
+  const box = $("#planChart");
+  const pts = P.unpaid.filter(x => x.months >= 1);
+  if (!pts.length){ box.innerHTML = ""; return; }
+  const maxM = Math.max(...pts.map(x => x.months)), maxV = niceMax(Math.max(P.remaining, P.fund + P.avg*maxM, 1));
+  const W = 560, H = 200, L = 52, R = 12, T = 12, B = 28, pw = W-L-R, ph = H-T-B;
+  const X = mth => L + mth/maxM*pw, Y = v => T + ph - v/maxV*ph;
+  let g = "";
+  for (let i=0;i<=3;i++){ const v = maxV*i/3; g += `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v>=1000?Math.round(v/1000)+"k":Math.round(v)}</text>`; }
+  // needed (step) line
+  let d = `M${X(0)} ${Y(0)}`; let prev = 0;
+  pts.forEach(x => { d += ` L${X(x.months)} ${Y(prev)} L${X(x.months)} ${Y(x.cum)}`; prev = x.cum; });
+  g += `<path d="${d}" fill="none" stroke="var(--gum)" stroke-width="2.5"/>`;
+  // projected savings line
+  g += `<line x1="${X(0)}" y1="${Y(P.fund)}" x2="${X(maxM)}" y2="${Y(P.fund + P.avg*maxM)}" stroke="var(--mint)" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+  pts.forEach(x => g += `<circle cx="${X(x.months)}" cy="${Y(x.cum)}" r="4" fill="${x.ok ? "var(--mint)" : "var(--gum)"}"><title>${esc(x.name)} · สะสม ${fmt(x.cum)}</title></circle>`);
+  const ticks = [...new Set(pts.map(x => x.due))];
+  ticks.forEach((ym,i) => { if (ticks.length > 6 && i % 2) return; g += `<text x="${X(Math.max(1, monthsUntil(ym)))}" y="${H-8}" text-anchor="middle">${esc(monthShort(ym))} ${String(Number(ym.slice(0,4))+543).slice(2)}</text>`; });
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟเทียบค่าใช้จ่ายสะสมกับเงินออมที่คาดไว้"><title>ค่าใช้จ่ายสะสมเทียบเงินออม</title>${g}</svg>
+    <div class="legend"><span><i style="background:var(--gum)"></i>ค่าใช้จ่ายสะสมตามเส้นตาย</span><span><i style="background:var(--mint)"></i>เงินกองทุนถ้าออมเท่าค่าเฉลี่ย 3 เดือน</span></div>`;
+}
+function resetPForm(){
+  state.pEditingId = null;
+  ["#pName","#pUsd","#pQty","#pDue","#pNote"].forEach(k => $(k).value = "");
+  $("#pSubmit").textContent = "เพิ่มในแผน"; $("#pFormTitle").textContent = "เพิ่มรายการในแผน"; $("#pCancel").hidden = true;
+}
+$("#pCancel").addEventListener("click", () => { resetPForm(); msg($("#pMsg"), ""); });
+$("#pForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#pMsg"), name = $("#pName").value.trim(), usdRaw = $("#pUsd").value.trim(), qtyRaw = $("#pQty").value.trim(), due = $("#pDue").value.trim();
+  if (!name){ msg(m, "ใส่ชื่อรายการก่อน", true); $("#pName").focus(); return; }
+  const usd = usdRaw ? num(usdRaw) : 0, qty = qtyRaw ? num(qtyRaw) : 1;
+  if (!(usd >= 0)){ msg(m, "ราคาต้องเป็นตัวเลข", true); $("#pUsd").focus(); return; }
+  if (!(Number.isInteger(qty) && qty >= 1)){ msg(m, "จำนวนต้องเป็นจำนวนเต็มตั้งแต่ 1", true); $("#pQty").focus(); return; }
+  if (!/^\d{4}-\d{2}$/.test(due)){ msg(m, "เลือกเดือนที่ต้องจ่าย (รูปแบบ ปี-เดือน เช่น 2027-06)", true); $("#pDue").focus(); return; }
+  const prev = state.pEditingId ? state.plan.find(x => x.id === state.pEditingId) : null;
+  const d = {...(prev ? strip(prev) : {owner: state.me, paid: false, order: Date.now()}), name, usd, qty, due, note: $("#pNote").value.trim()};
+  try {
+    if (prev){ await store.update("plan", prev.id, d); msg(m, "แก้ไขรายการแล้ว"); }
+    else { await store.add("plan", d); msg(m, `เพิ่ม “${name}” ในแผนแล้ว`); }
+    resetPForm();
+  } catch(err){ msg(m, "บันทึกไม่สำเร็จ ลองอีกครั้ง", true); }
+});
+$("#rateForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const r = num($("#pRate").value);
+  if (!(r > 1 && r < 200)){ toast("ใส่อัตราเป็นบาทต่อ 1 ดอลลาร์ เช่น 34.30"); $("#pRate").focus(); return; }
+  const plan = {...(state.settings.plan || {}), [state.me]: {...((state.settings.plan || {})[state.me] || {}), rate: Math.round(r*100)/100}};
+  try { document.activeElement.blur(); await store.settings({plan}); toast("บันทึกอัตราแลกเปลี่ยนแล้ว"); } catch(err){ toast("บันทึกไม่สำเร็จ"); }
+});
+$("#planList").addEventListener("click", async e => {
+  if (e.target.id === "planTemplate"){
+    e.target.disabled = true;
+    try { for (const [i,x] of PLAN_TEMPLATE.entries()) await store.add("plan", {...x, owner: state.me, paid: false, order: i}); toast("เพิ่มรายการแนะนำแล้ว แก้ราคาและเดือนให้ตรงแผนได้เลย"); }
+    catch(err){ toast("เพิ่มไม่สำเร็จ ลองอีกครั้ง"); e.target.disabled = false; }
+    return;
+  }
+  const pd = e.target.closest("[data-ppaid]"), td = e.target.closest("[data-ptodo]"), ed = e.target.closest("[data-pedit]"), del = e.target.closest("[data-pdel]");
+  if (pd){
+    const x = state.plan.find(y => y.id === pd.dataset.ppaid); if (!x) return;
+    const d = strip(x);
+    try {
+      if (!x.paid){
+        const thb = Math.round((Number(x.usd)||0) * (Number(x.qty)||1) * planRate());
+        d.paid = true; d.paidAt = todayISO;
+        if (thb > 0) await store.add("ledger", {owner: state.me, type: "expense", amount: thb, category: "สอบ & สมัคร Residency", note: x.name, date: todayISO, createdAt: Date.now()});
+        await store.update("plan", x.id, d);
+        toast(thb > 0 ? `จ่ายแล้ว และจดเป็นรายจ่าย ${fmt(thb)}` : "ทำเครื่องหมายจ่ายแล้ว");
+      } else { d.paid = false; delete d.paidAt; await store.update("plan", x.id, d); toast("ย้ายกลับเป็นยังไม่จ่าย (รายจ่ายที่จดไว้ไม่ถูกลบ)"); }
+    } catch(err){ toast("อัปเดตไม่สำเร็จ ลองอีกครั้ง"); }
+  }
+  if (td){
+    const x = state.plan.find(y => y.id === td.dataset.ptodo); if (!x) return;
+    const thb = Math.round((Number(x.usd)||0) * (Number(x.qty)||1) * planRate());
+    try { await store.add("todos", {title: x.name, amount: thb, dueDate: x.due + "-15", dueDay: 15, owner: state.me, repeat: "none", category: "สอบ & สมัคร Residency", autoLog: false, done: false, createdAt: Date.now()}); toast("เพิ่มในเช็กลิสต์แล้ว (ครบกำหนดวันที่ 15)"); }
+    catch(err){ toast("เพิ่มไม่สำเร็จ ลองอีกครั้ง"); }
+  }
+  if (ed){
+    const x = state.plan.find(y => y.id === ed.dataset.pedit); if (!x) return;
+    state.pEditingId = x.id;
+    $("#pName").value = x.name; $("#pUsd").value = x.usd || ""; $("#pQty").value = x.qty || 1; $("#pDue").value = x.due || ""; $("#pNote").value = x.note || "";
+    $("#pSubmit").textContent = "บันทึกการแก้ไข"; $("#pFormTitle").textContent = "แก้ไขรายการ"; $("#pCancel").hidden = false; msg($("#pMsg"), "");
+    $("#pForm").scrollIntoView({behavior:"smooth", block:"center"}); $("#pUsd").focus({preventScroll:true});
+  }
+  if (del){
+    const id = del.dataset.pdel;
+    if (state.pendingDelete !== id){ armDelete(id); return; }
+    state.pendingDelete = null;
+    try { await store.remove("plan", id); } catch(err){ toast("ลบไม่สำเร็จ ลองอีกครั้ง"); }
+  }
+});
+
 /* ---------- people, routing, examples ---------- */
 document.querySelector(".who").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   state.me = b.dataset.p; lsSet("fannoi-me", state.me);
-  state.day = null; resetForm(); setPayer(state.me); resetTdForm(); resetCdForm(); render();
+  state.day = null; state.editingBudget = false; resetForm(); setPayer(state.me); resetTdForm(); resetCdForm(); resetPForm(); render();
 });
-function route(){ const v = location.hash.replace("#",""); state.view = ["me","shared","todo","tax"].includes(v) ? v : "me"; render(); }
+function route(){ const v = location.hash.replace("#",""); state.view = ["me","shared","todo","plan","tax"].includes(v) ? v : "me"; render(); }
 window.addEventListener("hashchange", route);
 let clearArmed = false;
 $("#clearExamples").addEventListener("click", async e => {
